@@ -31,7 +31,7 @@ def hello():
             uploadFile(fileName)
     return "ok"
     
-run(host='192.168.0.11', port=8080, debug=True)
+run(host='localhost', port=8080, debug=True)
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-

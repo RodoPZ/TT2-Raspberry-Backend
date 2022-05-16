@@ -1,0 +1,5 @@
+/Data
+/venv
+/__pycache__
+*.xml
+*.json
