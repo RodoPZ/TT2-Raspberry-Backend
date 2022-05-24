@@ -1,4 +1,5 @@
 from fileinput import filename
+from socket import timeout
 from time import sleep
 from bottle import route, run, response, get, post, request, HTTPResponse
 from FaceCapture import capture
@@ -7,6 +8,8 @@ from FaceRecognition import recognize
 from Storage import *
 import os.path
 import json
+import serial
+
 
 @post('/RegisterFace')
 def RegisterFace():
@@ -38,8 +41,20 @@ def DeleteFace():
 
 @post('/RegisterNfc')
 def RegisterNfc():
+    ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+    cont = 0
+    if ser.isOpen():
+        print("Conectado", format(ser.port))
+        ser.write(b'1')
+        while True:
+            cont+= 1
+            ard=ser.readLine()
+            print(ard)
+            sleep(1)
+            if cont == 5:
+                break
     fileName = request.body.getvalue().decode('utf-8') 
-    sleep(1)
+    sleep(5)
     #Ejecutar aqui todo lo necesario para reconocer mediante NFC y obtener el UID
     UID = "XXXXXXXXXXXXXXXXXX"        
     return HTTPResponse(UID)    #regresar el UID
