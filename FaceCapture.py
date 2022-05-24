@@ -5,7 +5,6 @@ import imutils
 
 def capture(fileName):
 	personName = fileName[:fileName.index(".")]
-	print(personName)
 	dataPath = 'Data' 
 	personPath = dataPath + '/' + personName
 	count = 0
@@ -15,7 +14,7 @@ def capture(fileName):
 		print('Carpeta creada: ',personPath)
 		os.makedirs(personPath)
 
-	cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+	cap = cv2.VideoCapture(-1, cv2.CAP_V4L)
 	faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
 	cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
 	cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
@@ -32,7 +31,7 @@ def capture(fileName):
 			cv2.rectangle(frame, (x,y),(x+w,y+h),(0,255,0),2)
 			rostro = auxFrame[y:y+h,x:x+w]
 			rostro = cv2.resize(rostro,(150,150),interpolation=cv2.INTER_CUBIC)
-			cv2.imwrite(personPath + '/rotro_{}.jpg'.format(count),rostro)
+			cv2.imwrite(personPath + '/rostro_{}.jpg'.format(count),rostro)
 			count = count + 1
 
 		cv2.imshow(window_name,frame)

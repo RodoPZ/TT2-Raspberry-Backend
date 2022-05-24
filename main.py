@@ -11,8 +11,9 @@ import json
 @post('/RegisterFace')
 def RegisterFace():
     fileName = request.body.getvalue().decode('utf-8') + ".xml" #Comunicación desde APP a Python
-    sleep(2)
+    sleep(1)
     if os.path.exists(fileName):
+        recognize(fileName)
         return HTTPResponse(body="False")
     else:
         if checkModel(fileName) == False:
@@ -20,13 +21,14 @@ def RegisterFace():
             capture(fileName)
             train(fileName)
             uploadFile(fileName)
+            print("awa")
     return HTTPResponse(body="True") #Comunicación desde Python a APP
     
 @post('/DeleteFace')
 def DeleteFace():
     fileName = request.body.getvalue().decode('utf-8') + ".xml" 
     print(fileName)
-    sleep(2)
+    sleep(1)
     if os.path.exists(fileName):
         os.remove(fileName)
     if checkModel(fileName):
@@ -37,7 +39,7 @@ def DeleteFace():
 @post('/RegisterNfc')
 def RegisterNfc():
     fileName = request.body.getvalue().decode('utf-8') 
-    sleep(2)
+    sleep(1)
     #Ejecutar aqui todo lo necesario para reconocer mediante NFC y obtener el UID
     UID = "XXXXXXXXXXXXXXXXXX"        
     return HTTPResponse(UID)    #regresar el UID

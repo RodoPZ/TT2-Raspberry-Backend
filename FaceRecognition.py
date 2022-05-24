@@ -13,7 +13,7 @@ def recognize(fileName):
 
 	face_recognizer.read(fileName)
 
-	cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+	cap = cv2.VideoCapture(-1,cv2.CAP_V4L)
 	cap.set(3, 1280)
 	cap.set(4, 720)
 	#cap = cv2.VideoCapture('Resources/Video-mujer-frente.mp4')
@@ -49,7 +49,7 @@ def recognize(fileName):
 		
 		cv2.imshow(window_name,frame)
 		k = cv2.waitKey(1)
-		if k == 27 or reconocido == True:
+		if reconocido == True:
 			break
 
 	cap.release()
