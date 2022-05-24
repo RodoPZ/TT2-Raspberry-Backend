@@ -9,13 +9,16 @@ def capture(fileName):
 	dataPath = 'Data' 
 	personPath = dataPath + '/' + personName
 	count = 0
+	window_name = "frame"
 
 	if not os.path.exists(personPath):
 		print('Carpeta creada: ',personPath)
 		os.makedirs(personPath)
 
-	cap = cv2.VideoCapture("C:/Users/rolfi/Downloads/data.mov")
+	cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
 	faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
+	cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+	cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 	while True:
 		ret, frame = cap.read()
@@ -31,6 +34,11 @@ def capture(fileName):
 			rostro = cv2.resize(rostro,(150,150),interpolation=cv2.INTER_CUBIC)
 			cv2.imwrite(personPath + '/rotro_{}.jpg'.format(count),rostro)
 			count = count + 1
+
+		cv2.imshow(window_name,frame)
+		k = cv2.waitKey(1)
+		if k == 27 or count >= 100:
+			break
 
 	cap.release()
 	cv2.destroyAllWindows()

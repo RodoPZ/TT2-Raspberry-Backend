@@ -1,3 +1,4 @@
+from itertools import count
 import cv2
 import os
 
@@ -6,7 +7,7 @@ def recognize(fileName):
 	imagePaths = os.listdir(dataPath)
 	print("Iniciando reconocimiento")
 	reconocido = False
-
+	window_name = "frame"
 	face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 	# Leyendo el modelo
 
@@ -19,7 +20,8 @@ def recognize(fileName):
 	#cap = cv2.VideoCapture('Resources/Video-rostros.mp4')
 
 	faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
-
+	cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+	cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 	while True:
 		ret, frame = cap.read()
 		frame = cv2.convertScaleAbs(frame, alpha = 1, beta = 255*0.05)
@@ -45,7 +47,7 @@ def recognize(fileName):
 				cv2.putText(frame,'Desconocido',(x,y-20),2,0.8,(0,0,255),1,cv2.LINE_AA)
 				cv2.rectangle(frame, (x,y),(x+w,y+h),(0,0,255),2)
 		
-		cv2.imshow('frame',frame)
+		cv2.imshow(window_name,frame)
 		k = cv2.waitKey(1)
 		if k == 27 or reconocido == True:
 			break
