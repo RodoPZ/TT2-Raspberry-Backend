@@ -8,7 +8,7 @@ from FaceRecognition import recognize
 from Storage import *
 import os.path
 import json
-import serial
+import serial,time
 
 
 @post('/RegisterFace')
@@ -41,14 +41,16 @@ def DeleteFace():
 
 @post('/RegisterNfc')
 def RegisterNfc():
-    ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+    ser = serial.Serial('/dev/ttyUSB0',9600, timeout = 1)
     cont = 0
     if ser.isOpen():
         print("Conectado", format(ser.port))
+        sleep(2)
+        ser.write(b'P')
         ser.write(b'1')
         while True:
             cont+= 1
-            ard=ser.readLine()
+            ard=ser.readline()
             print(ard)
             sleep(1)
             if cont == 5:
