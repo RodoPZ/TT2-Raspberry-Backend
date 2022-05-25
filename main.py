@@ -44,20 +44,24 @@ def DeleteFace():
 
 @post('/RegisterNfc')
 def RegisterNfc():
+    texto = ""
     fileName = request.body.getvalue().decode('utf-8') 
     ser.write(b'1')
+    ser.write(b'0')
     cont = 0
     ser.flushInput()
     while True:
         cont+= 1
         ard=ser.readline()
+        if(str(ard).startswith("b'UID:")):
+            texto = str(ard).split(": ")[1]
+            texto = str(texto).split("\\")[0]
+            UID = texto
+            break
         print(ard)
         sleep(1)
-        if cont == 10:
-            break
-    sleep(5)
     #Ejecutar aqui todo lo necesario para reconocer mediante NFC y obtener el UID
-    UID = "XXXXXXXXXXXXXXXXXX"        
+    print(UID)
     return HTTPResponse(UID)    #regresar el UID
 
 run(host='localhost', port=8080, debug=True)
