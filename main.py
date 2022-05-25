@@ -10,6 +10,9 @@ import os.path
 import json
 import serial,time
 
+ser = serial.Serial('/dev/ttyUSB0',9600, timeout = 1)
+if ser.isOpen():
+    print("Conectado", format(ser.port))
 
 @post('/RegisterFace')
 def RegisterFace():
@@ -41,11 +44,9 @@ def DeleteFace():
 
 @post('/RegisterNfc')
 def RegisterNfc():
-    ser = serial.Serial('/dev/ttyUSB0',9600, timeout = 1)
+    fileName = request.body.getvalue().decode('utf-8') 
     cont = 0
     if ser.isOpen():
-        print("Conectado", format(ser.port))
-        sleep(2)
         ser.write(b'P')
         ser.write(b'1')
         while True:
@@ -55,7 +56,6 @@ def RegisterNfc():
             sleep(1)
             if cont == 5:
                 break
-    fileName = request.body.getvalue().decode('utf-8') 
     sleep(5)
     #Ejecutar aqui todo lo necesario para reconocer mediante NFC y obtener el UID
     UID = "XXXXXXXXXXXXXXXXXX"        
