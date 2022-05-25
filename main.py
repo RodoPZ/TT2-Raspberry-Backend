@@ -11,8 +11,8 @@ import json
 import serial,time
 
 ser = serial.Serial('/dev/ttyUSB0',9600, timeout = 1)
-global last_received
-buffer_string = ''
+
+
 
 if ser.isOpen():
     print("Conectado", format(ser.port))
@@ -69,27 +69,24 @@ def RegisterNfc():
     sleep(5)
     
     ser.write(b'1')
-
-    cont = 0
-    while True:
-        cont+= 1
-        receiving(ser)
-        if cont == 5:
-            break
+    receiving(ser)
     sleep(5)
     #Ejecutar aqui todo lo necesario para reconocer mediante NFC y obtener el UID
     UID = "XXXXXXXXXXXXXXXXXX"        
     return HTTPResponse(UID)    #regresar el UID
 
 def receiving(ser):
-    buffer_string = buffer_string + ser.read(ser.inWaiting())
-    if '\n' in buffer_string:
-        lines = buffer_string.split('\n') # Guaranteed to have at least 2 entries
-        last_received = lines[-2]
-        #If the Arduino sends lots of empty lines, you'll lose the
-        #last filled line, so you could make the above statement conditional
-        #like so: if lines[-2]: last_received = lines[-2]
-        buffer_string = lines[-1]
-        print(buffer_string)
-
+    global last_received
+    buffer_string = ''
+    cont = 0
+    while cont <= 5:
+        cont += 1
+        buffer_string = buffer_string + ser.read(ser.inWaiting())
+        if '\n' in buffer_string:
+            lines = buffer_string.split('\n') # Guaranteed to have at least 2 entries
+            last_received = lines[-2]
+            #If the Arduino sends lots of empty lines, you'll lose the
+            #last filled line, so you could make the above statement conditional
+            #like so: if lines[-2]: last_received = lines[-2]
+            buffer_string = lines[-1]
 run(host='localhost', port=8080, debug=True)
