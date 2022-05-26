@@ -1,17 +1,18 @@
 from bottle import route, run, response, get, post, request, HTTPResponse
 import Face
 import Storage
-import Dispensar
+import Motores
 import Nfc
 import os.path
 import serial,time
 
 
-# ~ ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 time.sleep(1)
 
 @post('/RegisterFace')
 def RegisterFace():
+    fileName = request.body.getvalue().decode('utf-8') + ".xml" #Comunicación desde APP a Python
     time.sleep(1)
     if os.path.exists(fileName):
         return HTTPResponse(body="False")
@@ -30,12 +31,13 @@ def RecognizeFace():
     print(fileName)
     time.sleep(1) 
     if os.path.exists(fileName):
-        
-    if checkModel(fileName):
-        delete(fileName)
-        
+        Face.recognize(fileName)
+    elif Storage.checkModel(fileName):
+        Storage.download(filename)
+        Face.recognize(fileName)
+    else:
+        print("Error: No existe el modelo")
     return HTTPResponse(body=True)
-    
     
 @post('/DeleteFace')
 def DeleteFace():
@@ -50,19 +52,36 @@ def DeleteFace():
 
 @post('/RegisterNfc')
 def RegisterNfc():
-    UID = Nfc.registrar()
+    UID = Nfc.registrar(ser)
     return HTTPResponse(UID)    #regresar el UID
     
-@post('/RegisterNfc')
-def RegisterNfc():
-    Value = request.body.getvalue().decode('utf-8')
+@post('/RecognizeNfc')
+def RecognizeNfc():
     Value = "29 53 59 98"
-    if(Nfc.reconocer(Value)):
-        ser.write(b'7')
+    if(Nfc.reconocer(Value,ser)):
+        return HTTPResponse("True")
+    else:
+        ser.write(b'6')
         time.sleep(3)
         ser.write(b'E')
         return HTTPResponse("False")
-    else:
-        Dispensar.dispensar("1","B"," 4921709107")
-        return HTTPResponse("True")
+    
+@post('/Dispensar')
+def Dispensar():
+    # ~ Value = request.body.getvalue().decode('utf-8')
+    Motores.dispensar("1","B", " 4921442910",ser)
+    return HTTPResponse("True")
+     
+
+@post('/MoverMotores')
+def MoverMotores():
+    value = request.body.getvalue().decode('utf-8')
+    print(value)
+    value = chr(ord('@')+int(value))
+    print(value)
+    Motores.mover(value,ser)
+    return HTTPResponse("True")
+    
+    
+    
 run(host='localhost', port=8080, debug=True)
