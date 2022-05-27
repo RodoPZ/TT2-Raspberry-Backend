@@ -5,7 +5,6 @@ def reconocer(nfcReconocer,ser):
 	ser.flushInput()
 	while True:
 		ard=ser.readline()
-		
 		if(str(ard).startswith("b'UID:")):
 			texto = str(ard).split(": ")[1]
 			texto = str(texto).split("\\")[0]
@@ -17,6 +16,7 @@ def reconocer(nfcReconocer,ser):
 			   i+=1
 		if(i == 3):
 			return False
+
 		print(ard)
 		
 		
