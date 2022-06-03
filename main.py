@@ -5,9 +5,9 @@ import Motores
 import Nfc
 import os.path
 import serial,time
-
-
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+import json
+import requests
+#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 time.sleep(1)
 
 @post('/RegisterFace')
@@ -68,8 +68,11 @@ def RecognizeNfc():
     
 @post('/Dispensar')
 def Dispensar():
-    # ~ Value = request.body.getvalue().decode('utf-8')
-    Motores.dispensar("1","B", " 4921442910",ser)
+    value = request.body.getvalue().decode('utf-8')
+    value = json.loads(value)
+    for i in value:
+        print(i)
+    # Motores.dispensar("1","B", " 4921442910",ser)
     return HTTPResponse("True")
      
 
@@ -81,7 +84,5 @@ def MoverMotores():
     print(value)
     Motores.mover(value,ser)
     return HTTPResponse("True")
-    
-    
-    
+
 run(host='localhost', port=8080, debug=True)
