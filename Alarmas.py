@@ -51,7 +51,6 @@ def withInternet():
     Ids = []
     Dosis = []
     dosisdata = []
-    horariosdata = []
     data = {}
     while(True):
         collection = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").get()
@@ -73,7 +72,6 @@ def withInternet():
                 hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(doc["horario"]).get()
                 hora = hora.to_dict()
                 data.update({doc["horario"] : hora})
-                horariosdata.append(hora)
 
                 if(hora["repetir"] == "Diariamente"):
                     alarm_day = [1,2,3,4,5,6,7]
