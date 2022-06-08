@@ -31,6 +31,7 @@ def dispensar(cantidad,compartimento, numero, ser):
 		print(ard)
 		if(str(ard).startswith("b'Inicio'")):
 			break
+	sleep(5)
 	
 	
 def mover(compartimento,ser):
