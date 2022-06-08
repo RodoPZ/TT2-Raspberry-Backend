@@ -1,11 +1,12 @@
 from time import sleep
 
 def dispensar(cantidad,compartimento, numero, ser):
+	sleep(2)
 	ser.flushInput()
 	ser.write(b'2')
 	ard=ser.readline()
 	print(ard)        
-	sleep(3)
+	sleep(2)
 
 	ser.flushInput()
 	ser.write(b'8')

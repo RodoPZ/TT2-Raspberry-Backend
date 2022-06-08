@@ -1,7 +1,7 @@
 import datetime
 from Dispensar import Dispensar
 import json
-
+import time
 def setAlarm(Dosis):
     
     alarm_days = []
@@ -24,4 +24,4 @@ def setAlarm(Dosis):
             if alarm_hour == current_hour:
                 if alarm_min == current_min:
                     Dispensar(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir)
-                    
+                    time.sleep(30)
