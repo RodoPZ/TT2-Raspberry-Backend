@@ -29,7 +29,7 @@ def dispensar(cantidad,compartimento, numero, ser):
 	while True:
 		ard=ser.readline()
 		print(ard)
-		if(str(ard).startswith("b'Inicio'")):
+		if(str(ard).startswith("b'Inicio")):
 			break
 	sleep(5)
 	
