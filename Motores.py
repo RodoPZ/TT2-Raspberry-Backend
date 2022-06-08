@@ -11,15 +11,15 @@ def dispensar(cantidad,compartimento, numero, ser):
 	ard=ser.readline()
 	print(ard)        
 	sleep(2)
-	ser.write(bytes(str(cantidad), 'utf-8'))
+	ser.write(str(cantidad).encode)
 	ard=ser.readline()
 	print(ard)
 	sleep(2)
-	ser.write(bytes(str(compartimento), 'utf-8'))            
+	ser.write(str(compartimento).encode)            
 	ard=ser.readline()
 	print(ard)
 	sleep(2)
-	ser.write(bytes(numero, 'utf-8'))
+	ser.write(str(numero).encode)
 	print(ard)
 	
 def mover(compartimento,ser):
@@ -29,5 +29,5 @@ def mover(compartimento,ser):
 	sleep(1)
 	ser.write(b'9')
 	sleep(2)
-	ser.write(bytes(str(compartimento), 'utf-8'))
+	ser.write(str(compartimento).encode)
 
