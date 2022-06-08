@@ -50,9 +50,9 @@ def withInternet():
     db = firestore.client()
     Ids = []
     Dosis = []
-    dosisdata = []
-    data = {}
     while(True):
+        dosisdata = []
+        data = {}
         collection = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").get()
         time.sleep(3)
         if(collection != Ids and str(collection)!="[]"):

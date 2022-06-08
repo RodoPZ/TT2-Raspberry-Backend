@@ -10,8 +10,6 @@ import serial,time
 import json
 import requests
 
-
-
 ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 time.sleep(1)
 
