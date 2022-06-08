@@ -1,6 +1,3 @@
-
-from multiprocessing import connection
-from pydoc import Doc
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
 import datetime
@@ -44,8 +41,7 @@ def withNoInternet():
                                 alarm_day.append(6)
                     alarm_hour = hora["hora"][0:2]
                     alarm_min = hora["hora"][3:5]
-                    Dosis.append([alarm_day,alarm_hour,alarm_min]) 
-        print(Dosis)          
+                    Dosis.append([alarm_day,alarm_hour,alarm_min])        
         ActualizarAlarmas.setAlarm(Dosis)
 
 def withInternet():
@@ -62,52 +58,57 @@ def withInternet():
         time.sleep(3)
         if(collection != Ids and str(collection)!="[]"):
             Ids = collection
-
             for doc in collection:
                 doc = doc.to_dict()
                 dosisdata.append(doc)
+
                 for PastillaList in json.loads(doc["pastillas"]):
                     print(PastillaList)
                     pastillaid = PastillaList[0]
                     pastilladata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(pastillaid).get()
                     data.update({pastillaid : pastilladata.to_dict()})
 
-                for horaid in doc["horario"]:
-                    alarm_day = []
-                    hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(horaid).get()
-                    hora = hora.to_dict()
-                    data.update({horaid : hora})
-                    horariosdata.append(hora)
-                    if(hora["repetir"] == "Diariamente"):
-                        alarm_day = [1,2,3,4,5,6,7]
-                    elif(hora["repetir"] == "Una vez"):
-                        alarm_day = current_min = datetime.datetime.now().strftime("%D") #cambiar
-                    elif(hora["repetir"] == "Lun a Vie"):
-                        alarm_day = [1,2,3,4,5]
-                    else:
-                        for day in hora["repetir"]:
-                            if(day == "Lu"):
-                                alarm_day.append(0)
-                            if(day == "Ma"):
-                                alarm_day.append(1)
-                            if(day == "Mi"):
-                                alarm_day.append(2)
-                            if(day == "Ju"):
-                                alarm_day.append(3)
-                            if(day == "Vi"):
-                                alarm_day.append(4)
-                            if(day == "Sa"):
-                                alarm_day.append(5)
-                            if(day == "Do"):
-                                alarm_day.append(6)
-                    alarm_hour = hora["hora"][0:2]
-                    alarm_min = hora["hora"][3:5]
-                    Dosis.append([alarm_day,alarm_hour,alarm_min,doc])   
+                alarm_day = []
+
+                hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(doc["horario"]).get()
+                hora = hora.to_dict()
+                data.update({doc["horario"] : hora})
+                horariosdata.append(hora)
+
+                if(hora["repetir"] == "Diariamente"):
+                    alarm_day = [1,2,3,4,5,6,7]
+                elif(hora["repetir"] == "Una vez"):
+                    alarm_day = current_min = datetime.datetime.now().strftime("%D") #cambiar
+                elif(hora["repetir"] == "Lun a Vie"):
+                    alarm_day = [1,2,3,4,5]
+                else:
+                    for day in hora["repetir"]:
+                        if(day == "Lu"):
+                            alarm_day.append(0)
+                        if(day == "Ma"):
+                            alarm_day.append(1)
+                        if(day == "Mi"):
+                            alarm_day.append(2)
+                        if(day == "Ju"):
+                            alarm_day.append(3)
+                        if(day == "Vi"):
+                            alarm_day.append(4)
+                        if(day == "Sa"):
+                            alarm_day.append(5)
+                        if(day == "Do"):
+                            alarm_day.append(6)
+
+                alarm_hour = hora["hora"][0:2]
+                alarm_min = hora["hora"][3:5]
+                alarm_repetir = hora["repetir"]
+
+                Dosis.append([alarm_day,alarm_hour,alarm_min,alarm_repetir,doc])   
+                
             data.update({"dosis" : dosisdata})
             with open('data.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         ActualizarAlarmas.setAlarm(Dosis)
-                    
+
 
 url = "https://firebase.google.com/?hl=es"
 timeout = 5

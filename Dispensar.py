@@ -46,6 +46,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar):
 
     pillItemList = tkinter.Listbox(height=len(pastillasVar),width=2,justify=tkinter.CENTER)
     for n,pill in enumerate(pastillasVar):
+        print(pill)
         pillItemList.insert(n,pill[1])
     pillItemList.config(state=tkinter.DISABLED)
     pillItemList.grid(row=4,column=2,columnspan=1)
@@ -70,14 +71,14 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar):
     frame = tkinter.Frame(root,height=20)
     frame.grid(row=7,column=1)
 
-    Label6 = tkinter.Label(root,text='Precione "Dispensar" para iniciar la dispensación')
+    Label6 = tkinter.Label(root,text='Presione "Dispensar" para iniciar la dispensación')
     Label6.configure(font=("Asap",15))
     Label6.grid(row=8,column=0,columnspan=4)
 
     def command():
         pload = []
         for i in pastillasVar:
-            pload.append([data[pill[0]]["contenedor"],i[1]])
+            pload.append([pill[0],data[pill[0]]["contenedor"],i[1]])
         print(pload)
         r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
         print(r.text)
@@ -89,4 +90,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar):
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["KPwGIcTZnWG55BElIgju",3],["KPwGIcTZnWG55BElIgju",10]],"10:20","Diario")
+    Dispensar("Dosis1",[["KPwGIcTZnWG55BElIgju",3],["KPwGIcTZnWG55BElIgju",1]],"10:20","Diario")

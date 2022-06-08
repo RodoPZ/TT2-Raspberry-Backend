@@ -5,7 +5,6 @@ def dispensar(cantidad,compartimento, numero, ser):
 	ser.write(b'2')
 	ard=ser.readline()
 	print(ard)        
-	
 	sleep(3)
 	ser.flushInput()
 	ser.write(b'8')
