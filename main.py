@@ -83,7 +83,7 @@ def Dispensar():
         cantidad = cantidad.to_dict()["cantidad"]
         cantidad = cantidad - i[2]
         print(cantidad)
-        collection = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
+        db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
         print(i)
         value = chr(ord('@')+int(i[1]))
         Motores.dispensar(i[2],value, " 4921442910",ser)

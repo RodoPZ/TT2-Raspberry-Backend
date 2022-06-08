@@ -6,21 +6,32 @@ def dispensar(cantidad,compartimento, numero, ser):
 	ard=ser.readline()
 	print(ard)        
 	sleep(3)
+
 	ser.flushInput()
 	ser.write(b'8')
 	ard=ser.readline()
-	print(ard)        
+	print(ard)
 	sleep(2)
+	
 	ser.write(str(cantidad).encode)
 	ard=ser.readline()
 	print(ard)
 	sleep(2)
+
 	ser.write(str(compartimento).encode)            
 	ard=ser.readline()
 	print(ard)
 	sleep(2)
+
 	ser.write(str(numero).encode)
+	ard=ser.readline()
 	print(ard)
+	while True:
+		ard=ser.readline()
+		print(ard)
+		if(str(ard).startswith("b'Inicio'")):
+			break
+	
 	
 def mover(compartimento,ser):
 	sleep(1)
