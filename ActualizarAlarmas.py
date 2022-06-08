@@ -5,7 +5,7 @@ import json
 def setAlarm(Dosis):
     
     alarm_days = []
-    for alarma in Dosis:    
+    for alarma in Dosis:   #cambiar para solo una hora 
         for day in alarma[0]:
             alarm_days.append(day)
 

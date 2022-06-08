@@ -90,4 +90,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar):
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["KPwGIcTZnWG55BElIgju",3],["KPwGIcTZnWG55BElIgju",1]],"10:20","Diario")
+    Dispensar("Dosis1",[["KPwGIcTZnWG55BElIgju",1]],"10:20","Diario")

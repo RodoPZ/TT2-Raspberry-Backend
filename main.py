@@ -12,7 +12,7 @@ import requests
 
 
 
-#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 time.sleep(1)
 
 
@@ -85,7 +85,8 @@ def Dispensar():
         print(cantidad)
         collection = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
         print(i)
-    # Motores.dispensar("1","B", " 4921442910",ser)
+        value = chr(ord('@')+int(i[1]))
+        Motores.dispensar(i[2],value, " 4921442910",ser)
     return HTTPResponse("True")
      
 
