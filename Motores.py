@@ -41,5 +41,5 @@ def mover(compartimento,ser):
 	sleep(1)
 	ser.write(b'9')
 	sleep(2)
-	ser.write(str(compartimento).encode)
+	ser.write(str(compartimento).encode())
 
