@@ -7,43 +7,43 @@ import json
 import ActualizarAlarmas
 import requests
 
-def withNoInternet():
-    Dosis = []
-    with open('data.json') as json_file:
-        data = json.load(json_file)
-    while(True):
-        time.sleep(1)
-        if(len(Dosis) != len(data["dosis"])):
-            for doc in data["dosis"]:
-                for horaid in doc["horario"]:
-                    alarm_day = []
-                    hora = data[horaid]
-                    if(hora["repetir"] == "Diariamente"):
-                        alarm_day = [1,2,3,4,5,6,7]
-                    elif(hora["repetir"] == "Una vez"):
-                        alarm_day = current_min = datetime.datetime.now().strftime("%D") #cambiar
-                    elif(hora["repetir"] == "Lun a Vie"):
-                        alarm_day = [1,2,3,4,5]
-                    else:
-                        for day in hora["repetir"]:
-                            if(day == "Lu"):
-                                alarm_day.append(0)
-                            if(day == "Ma"):
-                                alarm_day.append(1)
-                            if(day == "Mi"):
-                                alarm_day.append(2)
-                            if(day == "Ju"):
-                                alarm_day.append(3)
-                            if(day == "Vi"):
-                                alarm_day.append(4)
-                            if(day == "Sa"):
-                                alarm_day.append(5)
-                            if(day == "Do"):
-                                alarm_day.append(6)
-                    alarm_hour = hora["hora"][0:2]
-                    alarm_min = hora["hora"][3:5]
-                    Dosis.append([alarm_day,alarm_hour,alarm_min])        
-        ActualizarAlarmas.setAlarm(Dosis)
+# def withNoInternet():
+#     Dosis = []
+#     with open('data.json') as json_file:
+#         data = json.load(json_file)
+#     while(True):
+#         time.sleep(1)
+#         if(len(Dosis) != len(data["dosis"])):
+#             for doc in data["dosis"]:
+#                 for horaid in doc["horario"]:
+#                     alarm_day = []
+#                     hora = data[horaid]
+#                     if(hora["repetir"] == "Diariamente"):
+#                         alarm_day = [1,2,3,4,5,6,7]
+#                     elif(hora["repetir"] == "Una vez"):
+#                         alarm_day = current_min = datetime.datetime.now().strftime("%D") #cambiar
+#                     elif(hora["repetir"] == "Lun a Vie"):
+#                         alarm_day = [1,2,3,4,5]
+#                     else:
+#                         for day in hora["repetir"]:
+#                             if(day == "Lu"):
+#                                 alarm_day.append(0)
+#                             if(day == "Ma"):
+#                                 alarm_day.append(1)
+#                             if(day == "Mi"):
+#                                 alarm_day.append(2)
+#                             if(day == "Ju"):
+#                                 alarm_day.append(3)
+#                             if(day == "Vi"):
+#                                 alarm_day.append(4)
+#                             if(day == "Sa"):
+#                                 alarm_day.append(5)
+#                             if(day == "Do"):
+#                                 alarm_day.append(6)
+#                     alarm_hour = hora["hora"][0:2]
+#                     alarm_min = hora["hora"][3:5]
+#                     Dosis.append([alarm_day,alarm_hour,alarm_min])        
+#         ActualizarAlarmas.setAlarm(Dosis)
 
 def withInternet():
     cred = credentials.Certificate("tt2-database-31516e0b99db.json") #descargar de https://console.cloud.google.com/iam-admin/serviceaccounts/details/101070432244239069365/keys?project=tt2-database
@@ -69,8 +69,14 @@ def withInternet():
                     pastilladata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(pastillaid).get()
                     data.update({pastillaid : pastilladata.to_dict()})
 
-                alarm_day = []
+    
+                print(doc["seguridad"])
+                seguridadid = doc["seguridad"]
+                if(seguridadid!= ""):
+                    seguridaddata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Seguridad").document(seguridadid).get()
+                    data.update({seguridadid : seguridaddata.to_dict()})
 
+                alarm_day = []
 
                 hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(doc["horario"]).get()
                 hora = hora.to_dict()
@@ -110,9 +116,7 @@ def withInternet():
                             alarm_day.append(5)
                         if(day == "Do"):
                             alarm_day.append(6)
-
-
-
+                print(doc)
                 Dosis.append([alarm_day,alarm_hour,alarm_min,alarm_repetir,doc,docId])   
                 
             data.update({"dosis" : dosisdata})
@@ -128,6 +132,7 @@ try:
 	request = requests.get(url, timeout=timeout)
 	withInternet()
 except (requests.ConnectionError, requests.Timeout) as exception:
-    withNoInternet()
+    print("No hay internet")
+    # withNoInternet()
 
 

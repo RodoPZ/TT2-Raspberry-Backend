@@ -1,11 +1,15 @@
+from asyncio.windows_events import NULL
 import tkinter
 import json    
 import requests
-
+import os
+import time
+import Face
+import Storage
 primaryColor = "#f85f6a"
 
 
-def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId):
+def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     
     with open('data.json') as json_file:
         data = json.load(json_file)
@@ -77,12 +81,28 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId):
 
     def command():
         pload = []
-        for i in pastillasVar:
-            pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
-        print(pload)
-        r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
-        print(r.text)
-        root.destroy()
+        if(seguridadVar != ""):
+            seguridad = data[seguridadVar]
+            if(seguridad["tipo"]=="RECONOCIMIENTO FACIAL"):
+                fileName = seguridad["nombre"]+".xml" #Comunicación desde APP a Python
+                
+                time.sleep(1) 
+                if os.path.exists(fileName):
+                    print(fileName)
+                    verificado = Face.recognize(fileName)
+                elif Storage.checkModel(fileName):
+                    Storage.download(fileName)
+                    verificado = Face.recognize(fileName)
+                else:
+                    print("Error: No existe el modelo")
+
+                if(verificado == True):
+                    for i in pastillasVar:
+                        pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
+                    print(pload)
+                    r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+                    print(r.text)
+                    root.destroy()
 
     button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=command)
     button1.grid(row=9,column=0,columnspan=4)
@@ -90,4 +110,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId):
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["KCCfd0us4QF72446p3TX",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0")
+    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0","KyFsoMc69xDFnuHe7MVi")

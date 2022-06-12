@@ -94,10 +94,13 @@ def recognize(fileName):
 		cv2.imshow(window_name,frame)
 		k = cv2.waitKey(1)
 		if reconocido == True:
-			break
+			cap.release()
+			cv2.destroyAllWindows()
+			return True
 
 	cap.release()
 	cv2.destroyAllWindows()
+	return False
 	
 def train(fileName):
 	personName = fileName[:fileName.index(".")]
