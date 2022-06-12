@@ -116,7 +116,8 @@ def withInternet():
             data.update({"dosis" : dosisdata})
             with open('data.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
-        ActualizarAlarmas.setAlarm(Dosis)
+        if(len(Dosis)>0):
+            ActualizarAlarmas.setAlarm(Dosis)
 
 
 url = "https://firebase.google.com/?hl=es"
