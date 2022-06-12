@@ -1,4 +1,5 @@
 from bottle import route, run, response, get, post, request, HTTPResponse
+from cv2 import merge
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
 import Face
@@ -9,8 +10,9 @@ import os.path
 import serial,time
 import json
 import requests
+from datetime import datetime
 
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+# ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 time.sleep(1)
 
 
@@ -80,20 +82,20 @@ def Dispensar():
         cantidad = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).get()
         cantidad = cantidad.to_dict()["cantidad"]
         cantidad = cantidad - i[2]
-        print(cantidad)
         db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
-        print(i)
         value = chr(ord('@')+int(i[1]))
-        Motores.dispensar(i[2],value, " 4921442910",ser)
+        # Motores.dispensar(i[2],value, " 4921442910",ser)
+
+    if(i[3] == "Una vez"):
+        db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(i[4]).update({"horario" : ""})
+    db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(i[4]).set({"historial" : {str(datetime.today())[:16]:"True"}},merge=True)
     return HTTPResponse("True")
      
 
 @post('/MoverMotores')
 def MoverMotores():
     value = request.body.getvalue().decode('utf-8')
-    print(value)
     value = chr(ord('@')+int(value))
-    print(value)
     Motores.mover(value,ser)
     return HTTPResponse("True")
 

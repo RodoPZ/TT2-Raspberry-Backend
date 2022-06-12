@@ -1,6 +1,7 @@
+from xmlrpc.client import DateTime
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
-import datetime
+from datetime import datetime, timedelta
 import time
 import json
 import ActualizarAlarmas
@@ -69,14 +70,26 @@ def withInternet():
 
                 alarm_day = []
 
+
                 hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(doc["horario"]).get()
                 hora = hora.to_dict()
                 data.update({doc["horario"] : hora})
+                alarm_hour = hora["hora"][0:2]
+                alarm_min = hora["hora"][3:5]
+                alarm_repetir = hora["repetir"]
 
                 if(hora["repetir"] == "Diariamente"):
                     alarm_day = [1,2,3,4,5,6,7]
                 elif(hora["repetir"] == "Una vez"):
-                    alarm_day = current_min = datetime.datetime.now().strftime("%D") #cambiar
+                    now = datetime.now()
+                    ScheduledToday = datetime(now.year,now.month,now.day,int(alarm_hour),int(alarm_min))
+                    if(ScheduledToday<now):
+                        alarm_day = [now.weekday() + 1]
+                        print(alarm_day)
+                    else:
+                        alarm_day = [now.weekday()]
+                        print(alarm_day)
+
                 elif(hora["repetir"] == "Lun a Vie"):
                     alarm_day = [1,2,3,4,5]
                 else:
@@ -96,11 +109,9 @@ def withInternet():
                         if(day == "Do"):
                             alarm_day.append(6)
 
-                alarm_hour = hora["hora"][0:2]
-                alarm_min = hora["hora"][3:5]
-                alarm_repetir = hora["repetir"]
 
-                Dosis.append([alarm_day,alarm_hour,alarm_min,alarm_repetir,doc])   
+
+                Dosis.append([alarm_day,alarm_hour,alarm_min,alarm_repetir,doc,pastillaid])   
                 
             data.update({"dosis" : dosisdata})
             with open('data.json', 'w', encoding='utf-8') as f:
@@ -109,7 +120,7 @@ def withInternet():
 
 
 url = "https://firebase.google.com/?hl=es"
-timeout = 5
+timeout = 10
 try:
 	request = requests.get(url, timeout=timeout)
 	withInternet()

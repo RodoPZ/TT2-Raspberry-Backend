@@ -5,7 +5,7 @@ import requests
 primaryColor = "#f85f6a"
 
 
-def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar):
+def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId):
     
     with open('data.json') as json_file:
         data = json.load(json_file)
@@ -78,7 +78,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar):
     def command():
         pload = []
         for i in pastillasVar:
-            pload.append([pill[0],data[pill[0]]["contenedor"],i[1]])
+            pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
         print(pload)
         r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
         print(r.text)
@@ -90,4 +90,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar):
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["KPwGIcTZnWG55BElIgju",1], ["KPwGIcTZnWG55BElIgju",1]],"10:20","Diario")
+    Dispensar("Dosis1",[["KCCfd0us4QF72446p3TX",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0")
