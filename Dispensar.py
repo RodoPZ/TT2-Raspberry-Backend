@@ -4,9 +4,11 @@ import requests
 import os
 import time
 import Face
+import Nfc
 import Storage
+import serial
 primaryColor = "#f85f6a"
-
+#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     
@@ -104,6 +106,20 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
                     root.destroy()
                 else:
                     print("Error")
+
+            if(seguridad["tipo"]=="NFC"):
+                Value = seguridad["uid"]
+                if(Nfc.reconocer(Value,ser)):
+                    for i in pastillasVar:
+                        pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
+                    print(pload)
+                    r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+                    print(r.text)
+                    root.destroy()
+                else:
+                    ser.write(b'6')
+                    time.sleep(3)
+                    ser.write(b'E')
                 
 
     button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=command)
@@ -113,4 +129,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0","YmGJLQM1qd9LSc4LkmQ8")
+    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0","l1seFWPSiy9XtjhXFk6W")
