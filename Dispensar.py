@@ -8,7 +8,7 @@ import Nfc
 import Storage
 import serial
 primaryColor = "#f85f6a"
-#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     
