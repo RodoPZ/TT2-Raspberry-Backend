@@ -32,20 +32,6 @@ def RegisterFace():
             Storage.uploadFile(fileName)
             print("awa")
     return HTTPResponse(body="True") #Comunicación desde Python a APP
-
-@post('/RecognizeFace')
-def RecognizeFace():
-    fileName = request.body.getvalue().decode('utf-8') + ".xml" #Comunicación desde APP a Python
-    print(fileName)
-    time.sleep(1) 
-    if os.path.exists(fileName):
-        Face.recognize(fileName)
-    elif Storage.checkModel(fileName):
-        Storage.download(filename)
-        Face.recognize(fileName)
-    else:
-        print("Error: No existe el modelo")
-    return HTTPResponse(body=True)
     
 @post('/DeleteFace')
 def DeleteFace():

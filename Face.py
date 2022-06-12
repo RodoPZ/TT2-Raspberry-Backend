@@ -52,6 +52,7 @@ def recognize(fileName):
 	print("Iniciando reconocimiento")
 	reconocido = False
 	window_name = "frame"
+	error = 0
 	face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 	# Leyendo el modelo
 
@@ -88,8 +89,14 @@ def recognize(fileName):
 				print("reconocido")
 				reconocido = True
 			else:
+				
 				cv2.putText(frame,'Desconocido',(x,y-20),2,0.8,(0,0,255),1,cv2.LINE_AA)
 				cv2.rectangle(frame, (x,y),(x+w,y+h),(0,0,255),2)
+				error+=1
+				if(error == 50):
+					cap.release()
+					cv2.destroyAllWindows()
+					return False 
 		
 		cv2.imshow(window_name,frame)
 		k = cv2.waitKey(1)
@@ -97,10 +104,6 @@ def recognize(fileName):
 			cap.release()
 			cv2.destroyAllWindows()
 			return True
-
-	cap.release()
-	cv2.destroyAllWindows()
-	return False
 	
 def train(fileName):
 	personName = fileName[:fileName.index(".")]

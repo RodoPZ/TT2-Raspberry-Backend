@@ -102,6 +102,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
                     r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
                     print(r.text)
                     root.destroy()
+                
 
     button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=command)
     button1.grid(row=9,column=0,columnspan=4)
