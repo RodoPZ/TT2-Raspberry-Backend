@@ -59,9 +59,10 @@ def withInternet():
         if(collection != Ids and str(collection)!="[]"):
             Ids = collection
             for doc in collection:
+                docId = doc.id
                 doc = doc.to_dict()
                 dosisdata.append(doc)
-
+                print(doc["pastillas"])
                 for PastillaList in json.loads(doc["pastillas"]):
                     print(PastillaList)
                     pastillaid = PastillaList[0]
@@ -74,6 +75,7 @@ def withInternet():
                 hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(doc["horario"]).get()
                 hora = hora.to_dict()
                 data.update({doc["horario"] : hora})
+                
                 alarm_hour = hora["hora"][0:2]
                 alarm_min = hora["hora"][3:5]
                 alarm_repetir = hora["repetir"]
@@ -111,7 +113,7 @@ def withInternet():
 
 
 
-                Dosis.append([alarm_day,alarm_hour,alarm_min,alarm_repetir,doc,pastillaid])   
+                Dosis.append([alarm_day,alarm_hour,alarm_min,alarm_repetir,doc,docId])   
                 
             data.update({"dosis" : dosisdata})
             with open('data.json', 'w', encoding='utf-8') as f:
