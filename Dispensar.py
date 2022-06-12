@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 import tkinter
 import json    
 import requests
@@ -107,7 +106,8 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=command)
     button1.grid(row=9,column=0,columnspan=4)
     
+    
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0","KyFsoMc69xDFnuHe7MVi")
+    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0","YmGJLQM1qd9LSc4LkmQ8")

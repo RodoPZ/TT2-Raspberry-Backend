@@ -7,47 +7,9 @@ import json
 import ActualizarAlarmas
 import requests
 
-# def withNoInternet():
-#     Dosis = []
-#     with open('data.json') as json_file:
-#         data = json.load(json_file)
-#     while(True):
-#         time.sleep(1)
-#         if(len(Dosis) != len(data["dosis"])):
-#             for doc in data["dosis"]:
-#                 for horaid in doc["horario"]:
-#                     alarm_day = []
-#                     hora = data[horaid]
-#                     if(hora["repetir"] == "Diariamente"):
-#                         alarm_day = [1,2,3,4,5,6,7]
-#                     elif(hora["repetir"] == "Una vez"):
-#                         alarm_day = current_min = datetime.datetime.now().strftime("%D") #cambiar
-#                     elif(hora["repetir"] == "Lun a Vie"):
-#                         alarm_day = [1,2,3,4,5]
-#                     else:
-#                         for day in hora["repetir"]:
-#                             if(day == "Lu"):
-#                                 alarm_day.append(0)
-#                             if(day == "Ma"):
-#                                 alarm_day.append(1)
-#                             if(day == "Mi"):
-#                                 alarm_day.append(2)
-#                             if(day == "Ju"):
-#                                 alarm_day.append(3)
-#                             if(day == "Vi"):
-#                                 alarm_day.append(4)
-#                             if(day == "Sa"):
-#                                 alarm_day.append(5)
-#                             if(day == "Do"):
-#                                 alarm_day.append(6)
-#                     alarm_hour = hora["hora"][0:2]
-#                     alarm_min = hora["hora"][3:5]
-#                     Dosis.append([alarm_day,alarm_hour,alarm_min])        
-#         ActualizarAlarmas.setAlarm(Dosis)
-
 def withInternet():
     cred = credentials.Certificate("tt2-database-31516e0b99db.json") #descargar de https://console.cloud.google.com/iam-admin/serviceaccounts/details/101070432244239069365/keys?project=tt2-database
-    initialize_app(cred, {'storageBucket': 'tt2-database.appspot.com'})
+    #initialize_app(cred, {'storageBucket': 'tt2-database.appspot.com'})
     db = firestore.client()
     Ids = []
     Dosis = []
