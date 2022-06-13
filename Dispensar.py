@@ -1,4 +1,5 @@
 import tkinter
+from tkinter import *
 import json    
 import requests
 import os
@@ -8,8 +9,7 @@ import Nfc
 import Storage
 import serial
 primaryColor = "#f85f6a"
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
-
+#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     
     with open('data.json') as json_file:
@@ -76,57 +76,101 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     frame = tkinter.Frame(root,height=20)
     frame.grid(row=7,column=1)
 
-    Label6 = tkinter.Label(root,text='Presione "Dispensar" para iniciar la dispensación')
-    Label6.configure(font=("Asap",15))
-    Label6.grid(row=8,column=0,columnspan=4)
-
-    def command():
+    def DispensarNFC():
         pload = []
-        if(seguridadVar != ""):
-            seguridad = data[seguridadVar]
-            if(seguridad["tipo"]=="RECONOCIMIENTO FACIAL"):
-                fileName = seguridad["nombre"]+".xml" #Comunicación desde APP a Python
-                
-                time.sleep(1) 
-                if os.path.exists(fileName):
-                    print(fileName)
-                    verificado = Face.recognize(fileName)
-                elif Storage.checkModel(fileName):
-                    Storage.download(fileName)
-                    verificado = Face.recognize(fileName)
-                else:
-                    print("Error: No existe el modelo")
+        Value = data[seguridadVar]["uid"]
+        if(Nfc.reconocer(Value,ser)):
+            for i in pastillasVar:
+                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
+            print(pload)
+            r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+            print(r.text)
+            root.destroy()
+        else:
+            ser.write(b'6')
+            time.sleep(3)
+            ser.write(b'E')
 
-                if(verificado == True):
-                    for i in pastillasVar:
-                        pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
-                    print(pload)
-                    r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
-                    print(r.text)
-                    root.destroy()
-                else:
-                    print("Error")
+    def DispensarFacial():
+        pload = []
+        fileName = data[seguridadVar]["nombre"]+".xml" #Comunicación desde APP a Python
+        time.sleep(1) 
+        if os.path.exists(fileName):
+            print(fileName)
+            verificado = Face.recognize(fileName)
+        elif Storage.checkModel(fileName):
+            Storage.download(fileName)
+            verificado = Face.recognize(fileName)
+        else:
+            print("Error: No existe el modelo")
 
-            if(seguridad["tipo"]=="NFC"):
-                Value = seguridad["uid"]
-                if(Nfc.reconocer(Value,ser)):
-                    for i in pastillasVar:
-                        pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
-                    print(pload)
-                    r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
-                    print(r.text)
-                    root.destroy()
-                else:
-                    ser.write(b'6')
-                    time.sleep(3)
-                    ser.write(b'E')
-                
+        if(verificado == True):
+            for i in pastillasVar:
+                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
+            print(pload)
+            r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+            print(r.text)
+            root.destroy()
+        else:
+            print("Error")
 
-    button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=command)
-    button1.grid(row=9,column=0,columnspan=4)
-    
-    
+
+    def DispensarPin():
+        pload = []
+        if(data[seguridadVar]["pinData"] == PINentry1.get()):
+
+            for i in pastillasVar:
+                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
+            print(pload)
+            r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+            print(r.text)
+            root.destroy()
+        else:
+            ErrorText = tkinter.Label(root,text='Error',fg="red")
+            ErrorText.configure(font=("Asap",20))
+            ErrorText.grid(row=11,column=0,columnspan=4)
+
+            
+
+
+    if(data[seguridadVar]["tipo"] == "NFC"):
+        Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" y coloque su tarjeta RFID en el recuadro blanco frente al dispensador')
+        Label2.configure(font=("Asap",20))
+        Label2.grid(row=8,column=0,columnspan=4)
+
+        button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarNFC)
+        button1.grid(row=9,column=0,columnspan=4)  
+
+    if(data[seguridadVar]["tipo"] == "RECONOCIMIENTO FACIAL"):
+        Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" y colóquese frente al dispensador hasta que se reconozca su rostro')
+        Label2.configure(font=("Asap",20))
+        Label2.grid(row=8,column=0,columnspan=4)
+
+        button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarFacial)
+        button1.grid(row=9,column=0,columnspan=4)
+
+    if(data[seguridadVar]["tipo"] == "PIN"):
+        Label2 = tkinter.Label(root,text='Ingrese su PIN')
+        Label2.configure(font=("Asap",20))
+        Label2.grid(row=8,column=0,columnspan=4)
+        frame = tkinter.Frame(root,height=10)
+        frame.grid(row=9,column=1)
+
+        def limitSizeDay(*args):
+            value = PINentry.get()
+            if len(value) > 4: PINentry.set(value[:4])
+
+        PINentry = tkinter.StringVar()
+        PINentry.trace('w', limitSizeDay)
+        PINentry1=Entry(bg="white", fg="black", width=4, textvariable=PINentry,font=("Asap,20"))
+        PINentry1.grid(row=10,column=0,columnspan=4,ipady=10)
+        
+        frame = tkinter.Frame(root,height=10)
+        frame.grid(row=11,column=1)
+        button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarPin)
+        button1.grid(row=12,column=0,columnspan=4)
+        
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0","l1seFWPSiy9XtjhXFk6W")
+    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0","vO1vpJwvCHiKmdmwno72")
