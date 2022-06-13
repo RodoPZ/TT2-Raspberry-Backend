@@ -9,7 +9,7 @@ import Nfc
 import Storage
 import serial
 primaryColor = "#f85f6a"
-#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     
     with open('data.json') as json_file:
@@ -173,4 +173,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","fof5a1ccKYm9Jc5278o0","vO1vpJwvCHiKmdmwno72")
+    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1],["kLeJ7nutkFt8TX5aMA4c",1],["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","4byJfPMvzCUgVU032K6x","vO1vpJwvCHiKmdmwno72")

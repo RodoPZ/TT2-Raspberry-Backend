@@ -13,7 +13,7 @@ import requests
 from datetime import datetime
 import subprocess
 
-#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 subprocess.run("lxterminal -e bash -c 'python3 Alarmas.py ; read v'", shell=True)
 time.sleep(1)
 
@@ -65,6 +65,10 @@ def Dispensar():
     db = firestore.client()
     value = request.body.getvalue().decode('utf-8')
     value = json.loads(value)
+    ser.write(b'2')
+    time.sleep(2)
+    ser.write(b'8')
+    time.sleep(2)
     
     for i in value:
         cantidad = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).get()
@@ -72,8 +76,13 @@ def Dispensar():
         cantidad = cantidad - i[2]
         db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
         value = chr(ord('@')+int(i[1]))
-        Motores.dispensar(i[2],value, " 4921442910",ser)
-
+        while True:
+            ard=ser.readline()
+            print(ard)
+            if(str(ard).startswith("b'Ingrese la dosis")):
+                time.sleep(2)
+                Motores.dispensar(i[2],value, " ",ser)
+                break 
     if(i[3] == "Una vez"):
         db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(i[4]).update({"horario" : ""})
     db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(i[4]).set({"historial" : {str(datetime.today())[:16]:"True"}},merge=True)
