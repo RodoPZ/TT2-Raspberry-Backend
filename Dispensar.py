@@ -134,16 +134,16 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
 
 
     if(data[seguridadVar]["tipo"] == "NFC"):
-        Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar"\n y coloque su tarjeta RFID en el recuadro blanco\n frente al dispensador')
-        Label2.configure(font=("Asap",15))
+        Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" y coloque su tarjeta RFID en el recuadro blanco frente al dispensador')
+        Label2.configure(font=("Asap",20))
         Label2.grid(row=8,column=0,columnspan=4)
 
         button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarNFC)
         button1.grid(row=9,column=0,columnspan=4)  
 
     if(data[seguridadVar]["tipo"] == "RECONOCIMIENTO FACIAL"):
-        Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" \n y colóquese frente al dispensador hasta que se \n reconozca su rostro')
-        Label2.configure(font=("Asap",15))
+        Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" y colóquese frente al dispensador hasta que se reconozca su rostro')
+        Label2.configure(font=("Asap",20))
         Label2.grid(row=8,column=0,columnspan=4)
 
         button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarFacial)
@@ -173,4 +173,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["kLeJ7nutkFt8TX5aMA4c",1],["kLeJ7nutkFt8TX5aMA4c",1],["kLeJ7nutkFt8TX5aMA4c",1]],"10:20","Una Vez","4byJfPMvzCUgVU032K6x","l1seFWPSiy9XtjhXFk6W")
+    Dispensar("Dosis1",[["hkyy46ipUqojrwuXjCjM",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","vO1vpJwvCHiKmdmwno72")

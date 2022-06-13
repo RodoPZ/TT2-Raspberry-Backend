@@ -31,7 +31,7 @@ def withInternet():
                     pastilladata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(pastillaid).get()
                     data.update({pastillaid : pastilladata.to_dict()})
 
-    
+                
                 print(doc["seguridad"])
                 seguridadid = doc["seguridad"]
                 if(seguridadid!= ""):

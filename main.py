@@ -65,6 +65,8 @@ def Dispensar():
     db = firestore.client()
     value = request.body.getvalue().decode('utf-8')
     value = json.loads(value)
+    
+    print(value)
     ser.write(b'2')
     time.sleep(2)
     ser.write(b'8')
@@ -81,7 +83,7 @@ def Dispensar():
             print(ard)
             if(str(ard).startswith("b'Ingrese la dosis")):
                 time.sleep(2)
-                Motores.dispensar(i[2],value, " ",ser)
+                Motores.dispensar(i[2],value, "     ",ser)
                 break 
     if(i[3] == "Una vez"):
         db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(i[4]).update({"horario" : ""})
