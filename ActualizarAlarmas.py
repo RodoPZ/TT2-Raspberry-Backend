@@ -14,6 +14,10 @@ def setAlarm(Dosis):
         name = alarm[3]
         alarm_repetir = alarm[4]['nombre']
         dosis_Seguridad = alarm[4]['seguridad']
+        dosis_contactos = []
+        if(len(alarm[4]['alarmas'])>=3):
+            dosis_contactos = alarm[4]['alarmas'][2:]
+        print(dosis_contactos)    
         dosis_Id = alarm[5]
         pills = json.loads(alarm[4]['pastillas'])
         now = datetime.datetime.now()
@@ -25,5 +29,5 @@ def setAlarm(Dosis):
         if current_day in alarm_days:
             if alarm_hour == current_hour:
                 if alarm_min == current_min:
-                        Dispensar(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad)
+                        Dispensar(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad,dosis_contactos)
                         time.sleep(30)

@@ -9,8 +9,8 @@ import Nfc
 import Storage
 import serial
 primaryColor = "#f85f6a"
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
-def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
+#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,contactosList):
     
     with open('data.json') as json_file:
         data = json.load(json_file)
@@ -81,7 +81,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
         Value = data[seguridadVar]["uid"]
         if(Nfc.reconocer(Value,ser)):
             for i in pastillasVar:
-                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
+                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
             r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
             print(r.text)
@@ -106,7 +106,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
 
         if(verificado == True):
             for i in pastillasVar:
-                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
+                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
             r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
             print(r.text)
@@ -120,7 +120,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
         if(data[seguridadVar]["pinData"] == PINentry1.get()):
 
             for i in pastillasVar:
-                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId])
+                pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
             r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
             print(r.text)
@@ -173,4 +173,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar):
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["hkyy46ipUqojrwuXjCjM",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","vO1vpJwvCHiKmdmwno72")
+    Dispensar("Dosis1",[["hkyy46ipUqojrwuXjCjM",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","vO1vpJwvCHiKmdmwno72",['g3yZUpm2gFqJzL4F1Vu5', 'wor7buxR0ZdNrE01ItYd'])

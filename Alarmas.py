@@ -25,13 +25,19 @@ def withInternet():
                 doc = doc.to_dict()
                 dosisdata.append(doc)
                 print(doc["pastillas"])
+
                 for PastillaList in json.loads(doc["pastillas"]):
-                    print(PastillaList)
                     pastillaid = PastillaList[0]
                     pastilladata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(pastillaid).get()
                     data.update({pastillaid : pastilladata.to_dict()})
 
-                
+                for contacto in doc["alarmas"]:
+                    if(contacto != True and contacto != False):
+                        print(contacto)
+                        contactoId = contacto
+                        contactodata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Contactos").document(contactoId).get()
+                        data.update({contactoId : contactodata.to_dict()})
+               
                 print(doc["seguridad"])
                 seguridadid = doc["seguridad"]
                 if(seguridadid!= ""):
