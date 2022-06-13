@@ -13,7 +13,7 @@ import requests
 from datetime import datetime
 import subprocess
 
-#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 subprocess.run("lxterminal -e bash -c 'python3 Alarmas.py ; read v'", shell=True)
 time.sleep(1)
 
@@ -57,7 +57,7 @@ def RecognizeNfc():
     else:
         ser.write(b'6')
         time.sleep(3)
-        ser.write(b'E')
+        ser.write(value[0][5].encode()) 
         return HTTPResponse("False")
     
 @post('/Dispensar')
@@ -65,36 +65,40 @@ def Dispensar():
     db = firestore.client()
     value = request.body.getvalue().decode('utf-8')
     value = json.loads(value)
-    numstring = ""
-    with open('data.json') as json_file:
-        data = json.load(json_file)
-    #ser.write(b'2')
+    ser.write(b'2')
     time.sleep(2)
-    #ser.write(b'8')
+    ser.write(b'8')
     time.sleep(2)
-    for j in value[0][5]:
-        numstring+=str(data[j]["numero"]) + " "
-    print(numstring)
 
     for i in value:
         cantidad = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).get()
         cantidad = cantidad.to_dict()["cantidad"]
         cantidad = cantidad - i[2]
         db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
-        value = chr(ord('@')+int(i[1]))
+        Compartimento = chr(ord('@')+int(i[1]))
         while True:
             ard=ser.readline()
             print(ard)
             if(str(ard).startswith("b'Ingrese la dosis")):
                 time.sleep(2)
-                Motores.dispensar(i[2],value, "     ",ser)
+                Motores.dispensar(i[2],Compartimento,ser)
                 break 
+    while True:
+        ard=ser.readline()
+        print(ard)
+        if(str(ard).startswith("b'Ingrese la dosis")):
+            break 
     time.sleep(2)
     ser.write(b'1')
     time.sleep(2)
     ser.write(b'K')
     time.sleep(2)
-    ser.write(str(numstring).encode())  
+    ser.write(value[0][5].encode())  
+    while True:
+        ard=ser.readline()
+        print(ard)
+        if(str(ard).startswith("b'OK")):
+            break 
 
     if(i[3] == "Una vez"):
         db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(i[4]).update({"horario" : ""})

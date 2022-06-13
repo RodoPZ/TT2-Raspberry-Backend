@@ -3,8 +3,10 @@ from Dispensar import Dispensar
 import json
 import time
 def setAlarm(Dosis):
-    
+    numstring = ""
     alarm_days = []  
+    with open('data.json') as json_file:
+        data = json.load(json_file)
     for alarm in Dosis:
         for day in alarm[0]:
             alarm_days.append(day)
@@ -17,7 +19,9 @@ def setAlarm(Dosis):
         dosis_contactos = []
         if(len(alarm[4]['alarmas'])>=3):
             dosis_contactos = alarm[4]['alarmas'][2:]
-        print(dosis_contactos)    
+        for j in dosis_contactos:
+                numstring+=" " + str(data[j]["numero"])
+        print(numstring)    
         dosis_Id = alarm[5]
         pills = json.loads(alarm[4]['pastillas'])
         now = datetime.datetime.now()
@@ -29,5 +33,5 @@ def setAlarm(Dosis):
         if current_day in alarm_days:
             if alarm_hour == current_hour:
                 if alarm_min == current_min:
-                        Dispensar(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad,dosis_contactos)
+                        Dispensar(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
                         time.sleep(30)

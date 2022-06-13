@@ -9,12 +9,11 @@ import Nfc
 import Storage
 import serial
 primaryColor = "#f85f6a"
-#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,contactosList):
-    
     with open('data.json') as json_file:
         data = json.load(json_file)
-        
+    
     root=tkinter.Tk()
     root.title("Dispensar")
     #root.attributes('-fullscreen',True)
@@ -89,7 +88,13 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
         else:
             ser.write(b'6')
             time.sleep(3)
-            ser.write(b'E')
+            ser.write(str(contactosList).encode())
+            while True:
+                ard=ser.readline()
+                print(ard)
+                if(str(ard).startswith("b'OK")):
+                    break 
+
 
     def DispensarFacial():
         pload = []
@@ -112,8 +117,16 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
             print(r.text)
             root.destroy()
         else:
-            print("Error")
-
+            ser.write(b'2')
+            time.sleep(3)
+            ser.write(b'6')
+            time.sleep(3)
+            ser.write(str(contactosList).encode())
+            while True:
+                ard=ser.readline()
+                print(ard)
+                if(str(ard).startswith("b'OK")):
+                    break 
 
     def DispensarPin():
         pload = []
@@ -126,6 +139,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
             print(r.text)
             root.destroy()
         else:
+            ser.write(str(contactosList).encode())
             ErrorText = tkinter.Label(root,text='Error',fg="red")
             ErrorText.configure(font=("Asap",20))
             ErrorText.grid(row=11,column=0,columnspan=4)
@@ -173,4 +187,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["hkyy46ipUqojrwuXjCjM",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","vO1vpJwvCHiKmdmwno72",['g3yZUpm2gFqJzL4F1Vu5', 'wor7buxR0ZdNrE01ItYd'])
+    Dispensar("Dosis1",[["hkyy46ipUqojrwuXjCjM",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","YmGJLQM1qd9LSc4LkmQ8","4921709107 4921442910")

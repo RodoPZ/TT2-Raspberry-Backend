@@ -86,7 +86,7 @@ def withInternet():
                             alarm_day.append(6)
                 print(doc)
                 Dosis.append([alarm_day,alarm_hour,alarm_min,alarm_repetir,doc,docId])   
-                
+        
             data.update({"dosis" : dosisdata})
             with open('data.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)

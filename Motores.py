@@ -1,9 +1,9 @@
 from time import sleep
 
 def dispensar(cantidad,compartimento, ser):
-	sleep(2)
+	sleep(3)
 	ser.write(str(cantidad).encode())
-	sleep(1)
+	sleep(3)
 	ser.write(str(compartimento).encode())     
 	       
 	
