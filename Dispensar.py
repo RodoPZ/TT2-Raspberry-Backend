@@ -192,7 +192,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
             button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarPin)
             button1.grid(row=12,column=0,columnspan=4)
     else:
-        button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarPin)
+        button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarNoSeguridad)
         button1.grid(row=12,column=0,columnspan=4)
     root.mainloop()
 
