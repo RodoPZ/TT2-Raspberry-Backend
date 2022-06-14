@@ -10,10 +10,11 @@ import os.path
 import serial,time
 import json
 import requests
+import Dispensar as DispensarDosis
 from datetime import datetime
 import subprocess
 
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 subprocess.run("lxterminal -e bash -c 'python3 Alarmas.py ; read v'", shell=True)
 time.sleep(1)
 
@@ -111,6 +112,22 @@ def MoverMotores():
     value = request.body.getvalue().decode('utf-8')
     value = chr(ord('@')+int(value))
     Motores.mover(value,ser)
+    return HTTPResponse("True")
+
+@post('/OpenDispensar')
+def OpenDispensar():
+    value = request.body.getvalue().decode('utf-8')
+    
+    value= json.loads(value)
+    print(value)
+    name = value[0]
+    pills = json.loads(value[1])
+    hourmin = value[2]
+    alarm_repetir = value[3]
+    dosis_Id = value[4]
+    dosis_Seguridad = value[5]
+    numstring = value[6]
+    DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
     return HTTPResponse("True")
 
 run(host='localhost', port=8080, debug=True)

@@ -9,7 +9,7 @@ import Nfc
 import Storage
 import serial
 primaryColor = "#f85f6a"
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,contactosList):
     with open('data.json') as json_file:
         data = json.load(json_file)
@@ -144,47 +144,57 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
             ErrorText.configure(font=("Asap",20))
             ErrorText.grid(row=11,column=0,columnspan=4)
 
+    def DispensarNoSeguridad():
+        pload = []
+        for i in pastillasVar:
+            pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
+        print(pload)
+        r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+        print(r.text)
+        root.destroy()
+
+
+    if(seguridadVar!=""):
+        if(data[seguridadVar]["tipo"] == "NFC"):
+            Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" \n y coloque su tarjeta RFID en el recuadro \n blanco frente al dispensador')
+            Label2.configure(font=("Asap",14))
+            Label2.grid(row=8,column=0,columnspan=4)
+
+            button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarNFC)
+            button1.grid(row=9,column=0,columnspan=4)  
+
+        elif(data[seguridadVar]["tipo"] == "RECONOCIMIENTO FACIAL"):
+            Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" \n y colóquese frente al dispensador \n hasta que se reconozca su rostro')
+            Label2.configure(font=("Asap",14))
+            Label2.grid(row=8,column=0,columnspan=4)
+
+            button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarFacial)
+            button1.grid(row=9,column=0,columnspan=4)
+
+        elif(data[seguridadVar]["tipo"] == "PIN"):
+            Label2 = tkinter.Label(root,text='Ingrese su PIN')
+            Label2.configure(font=("Asap",20))
+            Label2.grid(row=8,column=0,columnspan=4)
+            frame = tkinter.Frame(root,height=10)
+            frame.grid(row=9,column=1)
+
+            def limitSizeDay(*args):
+                value = PINentry.get()
+                if len(value) > 4: PINentry.set(value[:4])
+
+            PINentry = tkinter.StringVar()
+            PINentry.trace('w', limitSizeDay)
+            PINentry1=Entry(bg="white", fg="black", width=4, textvariable=PINentry,font=("Asap,20"))
+            PINentry1.grid(row=10,column=0,columnspan=4,ipady=10)
             
-
-
-    if(data[seguridadVar]["tipo"] == "NFC"):
-        Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" y coloque su tarjeta RFID en el recuadro blanco frente al dispensador')
-        Label2.configure(font=("Asap",20))
-        Label2.grid(row=8,column=0,columnspan=4)
-
-        button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarNFC)
-        button1.grid(row=9,column=0,columnspan=4)  
-
-    if(data[seguridadVar]["tipo"] == "RECONOCIMIENTO FACIAL"):
-        Label2 = tkinter.Label(root,text='Presione el botón de "Dispensar" y colóquese frente al dispensador hasta que se reconozca su rostro')
-        Label2.configure(font=("Asap",20))
-        Label2.grid(row=8,column=0,columnspan=4)
-
-        button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarFacial)
-        button1.grid(row=9,column=0,columnspan=4)
-
-    if(data[seguridadVar]["tipo"] == "PIN"):
-        Label2 = tkinter.Label(root,text='Ingrese su PIN')
-        Label2.configure(font=("Asap",20))
-        Label2.grid(row=8,column=0,columnspan=4)
-        frame = tkinter.Frame(root,height=10)
-        frame.grid(row=9,column=1)
-
-        def limitSizeDay(*args):
-            value = PINentry.get()
-            if len(value) > 4: PINentry.set(value[:4])
-
-        PINentry = tkinter.StringVar()
-        PINentry.trace('w', limitSizeDay)
-        PINentry1=Entry(bg="white", fg="black", width=4, textvariable=PINentry,font=("Asap,20"))
-        PINentry1.grid(row=10,column=0,columnspan=4,ipady=10)
-        
-        frame = tkinter.Frame(root,height=10)
-        frame.grid(row=11,column=1)
+            frame = tkinter.Frame(root,height=10)
+            frame.grid(row=11,column=1)
+            button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarPin)
+            button1.grid(row=12,column=0,columnspan=4)
+    else:
         button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarPin)
         button1.grid(row=12,column=0,columnspan=4)
-        
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["hkyy46ipUqojrwuXjCjM",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","YmGJLQM1qd9LSc4LkmQ8","4921709107 4921442910")
+    Dispensar("Dosis1",[["UiTv2t7F3IHvwiLExqaH",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","YmGJLQM1qd9LSc4LkmQ8","")
