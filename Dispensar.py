@@ -8,8 +8,58 @@ import Face
 import Nfc
 import Storage
 import serial
+import Motores
+from datetime import datetime
+from firebase_admin import initialize_app, storage
+from firebase_admin import storage as admin_storage, credentials, firestore
+
 primaryColor = "#f85f6a"
-#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+
+def Dispensador(value):
+    db = firestore.client()
+    value = json.loads(value)
+    ser.write(b'2')
+    time.sleep(2)
+    ser.write(b'8')
+    time.sleep(2)
+
+    for i in value:
+        print(i)
+        cantidad = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).get()
+        cantidad = cantidad.to_dict()["cantidad"]
+        cantidad = cantidad - i[2]
+        db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
+        Compartimento = chr(ord('@')+int(i[1]))
+        while True:
+            ard=ser.readline()
+            print(ard)
+            if(str(ard).startswith("b'Ingrese la dosis")):
+                time.sleep(2)
+                Motores.dispensar(i[2],Compartimento,ser)
+                break 
+    while True:
+        ard=ser.readline()
+        print(ard)
+        if(str(ard).startswith("b'Ingrese la dosis")):
+            break 
+    time.sleep(2)
+    ser.write(b'1')
+    time.sleep(2)
+    ser.write(b'K')
+    time.sleep(2)
+    ser.write(value[0][5].encode())  
+    while True:
+        ard=ser.readline()
+        print(ard)
+        if(str(ard).startswith("b'OK")):
+            break 
+
+    if(i[3] == "Una vez"):
+        db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(i[4]).update({"horario" : ""})
+    db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(i[4]).set({"historial" : {str(datetime.today())[:16]:"True"}},merge=True)
+     
+
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,contactosList):
     with open('data.json') as json_file:
         data = json.load(json_file)
@@ -82,7 +132,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
             for i in pastillasVar:
                 pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
-            r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+            Dispensador(json.dumps(pload));
             print(r.text)
             root.destroy()
         else:
@@ -113,7 +163,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
             for i in pastillasVar:
                 pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
-            r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+            Dispensador(json.dumps(pload));
             print(r.text)
             root.destroy()
         else:
@@ -131,11 +181,10 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
     def DispensarPin():
         pload = []
         if(data[seguridadVar]["pinData"] == PINentry1.get()):
-
             for i in pastillasVar:
                 pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
-            r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
+            Dispensador(json.dumps(pload));
             print(r.text)
             root.destroy()
         else:
@@ -148,9 +197,8 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
         pload = []
         for i in pastillasVar:
             pload.append([pill[0],data[pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
-        print(pload)
-        r = requests.post('http://localhost:8080/Dispensar',data = json.dumps(pload))
-        print(r.text)
+        print("Enviar: " + str(pload))
+        Dispensador(json.dumps(pload));
         root.destroy()
 
 
@@ -197,4 +245,4 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
     root.mainloop()
 
 if __name__ == "__main__":
-    Dispensar("Dosis1",[["UiTv2t7F3IHvwiLExqaH",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","YmGJLQM1qd9LSc4LkmQ8","")
+    Dispensar("Dosis1",[["UiTv2t7F3IHvwiLExqaH",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","","0")
