@@ -14,7 +14,7 @@ import Dispensar as DispensarDosis
 from datetime import datetime
 import subprocess
 
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+# ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 subprocess.run("lxterminal -e bash -c 'python3 Alarmas.py ; read v'", shell=True)
 time.sleep(1)
 
@@ -58,7 +58,7 @@ def RecognizeNfc():
     else:
         ser.write(b'6')
         time.sleep(3)
-        ser.write(value[0][5].encode()) 
+        ser.write(Value[0][5].encode()) 
         return HTTPResponse("False")
     
 @post('/MoverMotores')
@@ -80,5 +80,6 @@ def OpenDispensar():
     dosis_Seguridad = value[5]
     numstring = value[6]
     DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
+
 
 run(host='localhost', port=8080, debug=True)
