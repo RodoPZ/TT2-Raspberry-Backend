@@ -1,4 +1,3 @@
-from xmlrpc.client import DateTime
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
 from datetime import datetime, timedelta
@@ -8,44 +7,53 @@ import ActualizarAlarmas
 import requests
 
 def withInternet():
+    with open('data.json') as json_file:
+        data = json.load(json_file)
     cred = credentials.Certificate("tt2-database-31516e0b99db.json") #descargar de https://console.cloud.google.com/iam-admin/serviceaccounts/details/101070432244239069365/keys?project=tt2-database
     #initialize_app(cred, {'storageBucket': 'tt2-database.appspot.com'})
     db = firestore.client()
-    Ids = []
+    DosisIds = []
+    PastillaIds = []
+    ContactosIds = []
     Dosis = []
+    pastillaList = {}
+    contactosList = {}
     while(True):
         dosisdata = []
-        data = {}
         collection = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").get()
-        time.sleep(3)
-        if(collection != Ids and str(collection)!="[]"):
-            Ids = collection
+        pastilladata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").get()
+        contactosdata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Contactos").get()
+
+        if(pastilladata != PastillaIds and str(pastilladata)!="[]"):
+            PastillaIds = pastilladata
+            for pastilla in pastilladata:
+                pastillaid = pastilla.id
+                pastilla = pastilla.to_dict()
+                pastillaList.update({pastillaid:pastilla})
+            data.update({"pastillas" : pastillaList})  
+        time.sleep(1)
+
+        if(contactosdata != ContactosIds and str(contactosdata)!="[]"):
+            ContactosIds = contactosdata
+            for contacto in contactosdata:
+                contactoid = contacto.id
+                contacto = contacto.to_dict()
+                contactosList.update({contactoid:contacto})
+            data.update({"contactos" : contactosList})  
+        time.sleep(1)
+
+        if(collection != DosisIds and str(collection)!="[]"):
+            DosisIds = collection
             for doc in collection:
                 docId = doc.id
                 doc = doc.to_dict()
                 dosisdata.append(doc)
-                print(doc["pastillas"])
-
-                for PastillaList in json.loads(doc["pastillas"]):
-                    pastillaid = PastillaList[0]
-                    pastilladata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(pastillaid).get()
-                    data.update({pastillaid : pastilladata.to_dict()})
-
-                for contacto in doc["alarmas"]:
-                    if(contacto != True and contacto != False):
-                        print(contacto)
-                        contactoId = contacto
-                        contactodata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Contactos").document(contactoId).get()
-                        data.update({contactoId : contactodata.to_dict()})
-               
-                print(doc["seguridad"])
                 seguridadid = doc["seguridad"]
                 if(seguridadid!= ""):
                     seguridaddata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Seguridad").document(seguridadid).get()
                     data.update({seguridadid : seguridaddata.to_dict()})
 
                 alarm_day = []
-
                 hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(doc["horario"]).get()
                 hora = hora.to_dict()
                 data.update({doc["horario"] : hora})
@@ -84,13 +92,13 @@ def withInternet():
                             alarm_day.append(5)
                         if(day == "Do"):
                             alarm_day.append(6)
-                print(doc)
                 Dosis.append([alarm_day,alarm_hour,alarm_min,alarm_repetir,doc,docId])   
         
             data.update({"dosis" : dosisdata})
             with open('data.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         if(len(Dosis)>0):
+            print(Dosis)
             ActualizarAlarmas.setAlarm(Dosis)
 
 

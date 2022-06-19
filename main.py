@@ -2,6 +2,7 @@ from bottle import route, run, response, get, post, request, HTTPResponse
 from cv2 import merge
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
+from numpy import true_divide
 import Face
 import Storage
 import Motores
@@ -80,6 +81,12 @@ def OpenDispensar():
     dosis_Seguridad = value[5]
     numstring = value[6]
     DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
+
+@post('/EnviarMensajes')
+def EnviarMensajes():
+    value = request.body.getvalue().decode('utf-8')
+    value= json.loads(value)
+    print(value)
 
 
 run(host='localhost', port=8080, debug=True)
