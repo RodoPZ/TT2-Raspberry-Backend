@@ -189,6 +189,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
                     break 
 
     def DispensarPin():
+        error = 0
         pload = []
         if(data[seguridadVar]["pinData"] == PINentry1.get()):
             for i in pastillasVar:
@@ -197,10 +198,17 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
             Dispensador(json.dumps(pload))
             root.destroy()
         else:
-            ser.write(str(contactosList).encode())
-            ErrorText = tkinter.Label(root,text='Error',fg="red")
-            ErrorText.configure(font=("Asap",20))
-            ErrorText.grid(row=11,column=0,columnspan=4)
+            error+=1
+            if error == 3:  
+                ser.write(b'2')
+                time.sleep(1)
+                ser.write(b'6')
+                time.sleep(1)    
+                ser.write(str(contactosList).encode())
+            else:
+                ErrorText = tkinter.Label(root,text='Error',fg="red")
+                ErrorText.configure(font=("Asap",20))
+                ErrorText.grid(row=11,column=0,columnspan=4)
 
     def DispensarNoSeguridad():
         pload = []
