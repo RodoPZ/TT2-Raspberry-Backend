@@ -80,8 +80,10 @@ def OpenDispensar():
     dosis_Id = value[4]
     dosis_Seguridad = value[5]
     numstring = value[6]
+    print("uwu: " + str(value))
     DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
-
+    return True
+    
 @post('/EnviarMensajes')
 def EnviarMensajes():
     value = request.body.getvalue().decode('utf-8')

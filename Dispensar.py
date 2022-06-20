@@ -13,7 +13,7 @@ from datetime import datetime
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
 import PocasPastillas
-
+error = 0
 primaryColor = "#f85f6a"
 ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 
@@ -52,7 +52,9 @@ def Dispensador(value):
     time.sleep(2)
     ser.write(b'K')
     time.sleep(2)
+    print(value[0][5].encode())
     ser.write(value[0][5].encode())  
+    
     while True:
         ard=ser.readline()
         print(ard)
@@ -71,6 +73,7 @@ def Dispensador(value):
             #Mandar mensaje aqui de que hay pocas pastillas
             PocasPastillas.PocasPastillas(data["pastillas"][i[0]]["contenedor"])
             break
+    
             
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,contactosList):
     with open('data.json') as json_file:
@@ -187,25 +190,27 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
                 print(ard)
                 if(str(ard).startswith("b'OK")):
                     break 
-
+    
     def DispensarPin():
-        error = 0
+        global error
         pload = []
         if(data[seguridadVar]["pinData"] == PINentry1.get()):
             for i in pastillasVar:
                 pload.append([pill[0],data["pastillas"][pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
-            print(pload)
             Dispensador(json.dumps(pload))
             root.destroy()
         else:
             error+=1
-            if error == 3:  
+            print(error)
+            print(contactosList)
+            if error == 3:
+                error = 0
                 ser.write(b'2')
                 time.sleep(1)
                 ser.write(b'6')
-                time.sleep(1)    
+                time.sleep(3)
+                print(str(contactosList))
                 ser.write(str(contactosList).encode())
-            else:
                 ErrorText = tkinter.Label(root,text='Error',fg="red")
                 ErrorText.configure(font=("Asap",20))
                 ErrorText.grid(row=11,column=0,columnspan=4)
