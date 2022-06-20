@@ -15,7 +15,7 @@ from firebase_admin import storage as admin_storage, credentials, firestore
 import PocasPastillas
 
 primaryColor = "#f85f6a"
-# ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 
 def Dispensador(value):
     with open('data.json') as json_file:

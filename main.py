@@ -15,7 +15,7 @@ import Dispensar as DispensarDosis
 from datetime import datetime
 import subprocess
 
-# ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 subprocess.run("lxterminal -e bash -c 'python3 Alarmas.py ; read v'", shell=True)
 time.sleep(1)
 
