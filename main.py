@@ -1,3 +1,4 @@
+import re
 from bottle import route, run, response, get, post, request, HTTPResponse
 from cv2 import merge
 from firebase_admin import initialize_app, storage
@@ -15,7 +16,7 @@ import Dispensar as DispensarDosis
 from datetime import datetime
 import subprocess
 
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 subprocess.run("lxterminal -e bash -c 'python3 Alarmas.py ; read v'", shell=True)
 time.sleep(1)
 
@@ -81,8 +82,8 @@ def OpenDispensar():
     dosis_Seguridad = value[5]
     numstring = value[6]
     print("uwu: " + str(value))
-    DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
-    return True
+    result = DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
+    return HTTPResponse(str(result))
     
 @post('/EnviarMensajes')
 def EnviarMensajes():

@@ -13,69 +13,72 @@ from datetime import datetime
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
 import PocasPastillas
-error = 0
+
 primaryColor = "#f85f6a"
-ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+Dispensado = False
+#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 
 def Dispensador(value):
+    global Dispensado
     with open('data.json') as json_file:
         data = json.load(json_file)
     pocasPastillas = False
     db = firestore.client()
     value = json.loads(value)
-    print(value)
-    ser.write(b'2')
-    time.sleep(2)
-    ser.write(b'8')
-    time.sleep(2)
+    # print(value)
+    # ser.write(b'2')
+    # time.sleep(2)
+    # ser.write(b'8')
+    # time.sleep(2)
 
-    for i in value:
-        print(i)
-        cantidad = data["pastillas"][i[0]]["cantidad"]
-        cantidad = cantidad - i[2]
-        db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
-        Compartimento = chr(ord('@')+int(i[1]))
-        while True:
-            ard=ser.readline()
-            print(ard)
-            if(str(ard).startswith("b'Ingrese la dosis")):
-                time.sleep(2)
-                Motores.dispensar(i[2],Compartimento,ser)
-                break 
-    while True:
-        ard=ser.readline()
-        print(ard)
-        if(str(ard).startswith("b'Ingrese la dosis")):
-            break 
-    time.sleep(2)
-    ser.write(b'1')
-    time.sleep(2)
-    ser.write(b'K')
-    time.sleep(2)
-    print(value[0][5].encode())
-    ser.write(value[0][5].encode())  
-    
-    while True:
-        ard=ser.readline()
-        print(ard)
-        if(str(ard).startswith("b'OK")):
-            break 
+    # for i in value:
+    #     print(i)
+    #     cantidad = data["pastillas"][i[0]]["cantidad"]
+    #     cantidad = cantidad - i[2]
+    #     db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").document(i[0]).update({"cantidad" : cantidad})
+    #     Compartimento = chr(ord('@')+int(i[1]))
+    #     while True:
+    #         ard=ser.readline()
+    #         print(ard)
+    #         if(str(ard).startswith("b'Ingrese la dosis")):
+    #             time.sleep(2)
+    #             Motores.dispensar(i[2],Compartimento,ser)
+    #             break 
+    # while True:
+    #     ard=ser.readline()
+    #     print(ard)
+    #     if(str(ard).startswith("b'Ingrese la dosis")):
+    #         break 
+    # time.sleep(2)
+    # ser.write(b'1')
+    # time.sleep(2)
+    # ser.write(b'K')
+    # time.sleep(2)
+    # ser.write(value[0][5].encode())  
+    # while True:
+    #     ard=ser.readline()
+    #     print(ard)
+    #     if(str(ard).startswith("b'OK")):
+    #         break 
 
-    if(value[0][3] == "Una vez"):
-        db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).update({"horario" : ""})
-    db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).set({"historial" : {str(datetime.today())[:10]:str(datetime.today())[10:16]}},merge=True)
-    for i in value:
-        if(data["pastillas"][i[0]]["cantidad"]<6 and data["pocaspastillas"] != str(datetime.now())[0:10]):
-            data.update({"pocaspastillas" : str(datetime.now())[0:10]})
+    # if(value[0][3] == "Una vez"):
+    #     db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).update({"horario" : ""})
+    # db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).set({"historial" : {str(datetime.today())[:10]:str(datetime.today())[10:16]}},merge=True)
+    # for i in value:
+    #     if(data["pastillas"][i[0]]["cantidad"]<6 and data["pocaspastillas"] != str(datetime.now())[0:10]):
+    #         data.update({"pocaspastillas" : str(datetime.now())[0:10]})
 
-            with open('data.json', 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-            #Mandar mensaje aqui de que hay pocas pastillas
-            PocasPastillas.PocasPastillas(data["pastillas"][i[0]]["contenedor"])
-            break
-    
+    #         with open('data.json', 'w', encoding='utf-8') as f:
+    #             json.dump(data, f, ensure_ascii=False, indent=4)
+    #         #Mandar mensaje aqui de que hay pocas pastillas
+    #         PocasPastillas.PocasPastillas(data["pastillas"][i[0]]["contenedor"])
+    #         break
+    Dispensado = True
+
             
 def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,contactosList):
+    global Dispensado
+    Dispensado = False
     with open('data.json') as json_file:
         data = json.load(json_file)
     
@@ -190,27 +193,25 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
                 print(ard)
                 if(str(ard).startswith("b'OK")):
                     break 
-    
+
     def DispensarPin():
-        global error
+        error = 0
         pload = []
         if(data[seguridadVar]["pinData"] == PINentry1.get()):
             for i in pastillasVar:
                 pload.append([pill[0],data["pastillas"][pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
+            print(pload)
             Dispensador(json.dumps(pload))
             root.destroy()
         else:
             error+=1
-            print(error)
-            print(contactosList)
-            if error == 3:
-                error = 0
+            if error == 3:  
                 ser.write(b'2')
                 time.sleep(1)
                 ser.write(b'6')
-                time.sleep(3)
-                print(str(contactosList))
+                time.sleep(1)    
                 ser.write(str(contactosList).encode())
+            else:
                 ErrorText = tkinter.Label(root,text='Error',fg="red")
                 ErrorText.configure(font=("Asap",20))
                 ErrorText.grid(row=11,column=0,columnspan=4)
@@ -264,6 +265,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
         button1=tkinter.Button(root, text="Dispensar", bg='#f85f6a',fg="white" ,font=("Asap",20),command=DispensarNoSeguridad)
         button1.grid(row=12,column=0,columnspan=4)
     root.mainloop()
+    return Dispensado
 
 if __name__ == "__main__":
     Dispensar("Dosis1",[["UiTv2t7F3IHvwiLExqaH",1]],"10:20","Una Vez","1cn6zVd0BjQ0O7240qSs","","0")

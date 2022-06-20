@@ -69,10 +69,8 @@ def withInternet():
                     ScheduledToday = datetime(now.year,now.month,now.day,int(alarm_hour),int(alarm_min))
                     if(ScheduledToday<now):
                         alarm_day = [now.weekday() + 1]
-                        print(alarm_day)
                     else:
                         alarm_day = [now.weekday()]
-                        print(alarm_day)
 
                 elif(hora["repetir"] == "Lun a Vie"):
                     alarm_day = [1,2,3,4,5]
@@ -98,7 +96,6 @@ def withInternet():
             with open('data.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         if(len(Dosis)>0):
-            print(Dosis)
             ActualizarAlarmas.setAlarm(Dosis)
 
 

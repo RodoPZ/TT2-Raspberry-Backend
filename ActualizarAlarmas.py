@@ -37,7 +37,6 @@ def setAlarm(Dosis):
             dosis_contactos = alarm[4]['alarmas'][2:]
         for contactoDosis in dosis_contactos:
             numstring+=" " + str(data["contactos"][contactoDosis]["numero"])
-        print(numstring)
         dosis_Id = alarm[5]
         pills = json.loads(alarm[4]['pastillas'])
         now = datetime.datetime.now()
@@ -45,6 +44,7 @@ def setAlarm(Dosis):
         current_min = now.strftime("%M")
         current_day = now.weekday()
         print(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
+        print()
         if current_day in alarm_days:
             if alarm_hour == current_hour:
                 if alarm_min == current_min:
