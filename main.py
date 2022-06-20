@@ -50,7 +50,7 @@ def DeleteFace():
 def RegisterNfc():
     UID = Nfc.registrar(ser)
     return HTTPResponse(UID)    #regresar el UID
-    
+
 @post('/RecognizeNfc')
 def RecognizeNfc():
     Value = request.body.getvalue().decode('utf-8')
@@ -61,7 +61,7 @@ def RecognizeNfc():
         time.sleep(3)
         ser.write(Value[0][5].encode()) 
         return HTTPResponse("False")
-    
+
 @post('/MoverMotores')
 def MoverMotores():
     value = request.body.getvalue().decode('utf-8')
@@ -87,6 +87,5 @@ def EnviarMensajes():
     value = request.body.getvalue().decode('utf-8')
     value= json.loads(value)
     print(value)
-
 
 run(host='localhost', port=8080, debug=True)
