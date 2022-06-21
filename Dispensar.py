@@ -12,14 +12,13 @@ import Motores
 from datetime import datetime
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
-import PocasPastillas
 
 primaryColor = "#f85f6a"
 Dispensado = False
 ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 error = 0
+
 def Dispensador(value):
-    
     global Dispensado
     with open('data.json') as json_file:
         data = json.load(json_file)
@@ -55,10 +54,8 @@ def Dispensador(value):
     time.sleep(2)
     ser.write(b'K')
     time.sleep(3)
-    if(value[0][5] == "0"):
-        ser.write(b' 1')
-    else:
-        ser.write(value[0][5].encode())  
+    ser.write(value[0][5].encode())  
+    time.sleep(3)
     while True:
         ard=ser.readline()
         print(ard)
@@ -69,14 +66,22 @@ def Dispensador(value):
         db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).update({"horario" : ""})
     db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).set({"historial" : {str(datetime.today())[:10]:str(datetime.today())[10:16]}},merge=True)
     for i in value:
+        #print(data["pastillas"][i[0]]["cantidad"],data["pocaspastillas"])
         if(data["pastillas"][i[0]]["cantidad"]<6 and data["pocaspastillas"] != str(datetime.now())[0:10]):
             data.update({"pocaspastillas" : str(datetime.now())[0:10]})
-
-            with open('data.json', 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-            #Mandar mensaje aqui de que hay pocas pastillas
-            PocasPastillas.PocasPastillas(data["pastillas"][i[0]]["contenedor"])
+            time.sleep(3)
+            ser.write(b'3')
+            time.sleep(3)
+            ser.write(value[0][5].encode()) 
+            time.sleep(3)
+            while True:
+                ard=ser.readline()
+                print(ard)
+                if(str(ard).startswith("b'OK")):
+                    break 
             break
+    with open('data.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
     Dispensado = True
 
             
@@ -89,6 +94,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
     
     root=tkinter.Tk()
     root.title("Dispensar")
+
     #root.attributes('-fullscreen',True)
 
     Label1 = tkinter.Label(root,text='Es hora de su dosis')
