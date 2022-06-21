@@ -16,7 +16,7 @@ import Dispensar as DispensarDosis
 from datetime import datetime
 import subprocess
 
-#ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 subprocess.run("lxterminal -e bash -c 'python3 Alarmas.py ; read v'", shell=True)
 time.sleep(1)
 
@@ -81,8 +81,8 @@ def OpenDispensar():
     dosis_Id = value[4]
     dosis_Seguridad = value[5]
     numstring = value[6]
-    print("uwu: " + str(value))
     result = DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
+    print(str(result))
     return HTTPResponse(str(result))
     
 @post('/EnviarMensajes')

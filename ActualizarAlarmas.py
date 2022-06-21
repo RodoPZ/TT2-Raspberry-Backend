@@ -25,6 +25,8 @@ def setAlarm(Dosis):
             
             
     for alarm in Dosis:
+        alarm_days = []
+        numstring=""
         for day in alarm[0]:
             alarm_days.append(day)
         alarm_hour = alarm[1]
@@ -43,6 +45,7 @@ def setAlarm(Dosis):
         current_hour = now.strftime("%H")
         current_min = now.strftime("%M")
         current_day = now.weekday()
+        
         print(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
         print()
         if current_day in alarm_days:
