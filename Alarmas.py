@@ -19,6 +19,7 @@ def withInternet():
     pastillaList = {}
     contactosList = {}
     while(True):
+        time.sleep(2)
         dosisdata = []
         collection = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").get()
         pastilladata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").get()
@@ -31,7 +32,7 @@ def withInternet():
                 pastilla = pastilla.to_dict()
                 pastillaList.update({pastillaid:pastilla})
             data.update({"pastillas" : pastillaList})  
-        time.sleep(1)
+        time.sleep(2)
 
         if(contactosdata != ContactosIds and str(contactosdata)!="[]"):
             ContactosIds = contactosdata
@@ -40,7 +41,7 @@ def withInternet():
                 contacto = contacto.to_dict()
                 contactosList.update({contactoid:contacto})
             data.update({"contactos" : contactosList})  
-        time.sleep(1)
+        time.sleep(2)
 
         if(collection != DosisIds and str(collection)!="[]"):
             DosisIds = collection
@@ -54,7 +55,10 @@ def withInternet():
                     data.update({seguridadid : seguridaddata.to_dict()})
 
                 alarm_day = []
-                hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(doc["horario"]).get()
+                if(doc["horario"]==""):
+                    break
+                else:
+                    hora = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Horarios").document(doc["horario"]).get()
                 hora = hora.to_dict()
                 data.update({doc["horario"] : hora})
                 
@@ -63,7 +67,7 @@ def withInternet():
                 alarm_repetir = hora["repetir"]
 
                 if(hora["repetir"] == "Diariamente"):
-                    alarm_day = [1,2,3,4,5,6,7]
+                    alarm_day = [0,1,2,3,4,5,6]
                 elif(hora["repetir"] == "Una vez"):
                     now = datetime.now()
                     ScheduledToday = datetime(now.year,now.month,now.day,int(alarm_hour),int(alarm_min))
@@ -73,7 +77,7 @@ def withInternet():
                         alarm_day = [now.weekday()]
 
                 elif(hora["repetir"] == "Lun a Vie"):
-                    alarm_day = [1,2,3,4,5]
+                    alarm_day = [0,1,2,3,4]
                 else:
                     for day in hora["repetir"]:
                         if(day == "Lu"):

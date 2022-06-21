@@ -82,13 +82,14 @@ def OpenDispensar():
     dosis_Seguridad = value[5]
     numstring = value[6]
     result = DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
-    print(str(result))
     return HTTPResponse(str(result))
     
 @post('/EnviarMensajes')
 def EnviarMensajes():
     value = request.body.getvalue().decode('utf-8')
     value= json.loads(value)
-    print(value)
+    ser.write(b'X')
+    time.sleep(3)
+    ser.write(str(value).encode())
 
 run(host='localhost', port=8080, debug=True)

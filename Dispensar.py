@@ -9,6 +9,7 @@ import Nfc
 import Storage
 import serial
 import Motores
+import PocasPastillas   
 from datetime import datetime
 from firebase_admin import initialize_app, storage
 from firebase_admin import storage as admin_storage, credentials, firestore
@@ -18,6 +19,8 @@ Dispensado = False
 ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 error = 0
 
+
+
 def Dispensador(value):
     global Dispensado
     with open('data.json') as json_file:
@@ -25,12 +28,11 @@ def Dispensador(value):
     pocasPastillas = False
     db = firestore.client()
     value = json.loads(value)
-    print(value)
+    print("awa " + str(value))
     ser.write(b'2')
     time.sleep(2)
     ser.write(b'8')
     time.sleep(2)
-
     for i in value:
         print(i)
         cantidad = data["pastillas"][i[0]]["cantidad"]
@@ -67,8 +69,7 @@ def Dispensador(value):
     db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).set({"historial" : {str(datetime.today())[:10]:str(datetime.today())[10:16]}},merge=True)
     for i in value:
         #print(data["pastillas"][i[0]]["cantidad"],data["pocaspastillas"])
-        if(data["pastillas"][i[0]]["cantidad"]<6 and data["pocaspastillas"] != str(datetime.now())[0:10]):
-            data.update({"pocaspastillas" : str(datetime.now())[0:10]})
+        if data["pastillas"][i[0]]["cantidad"]<6:
             time.sleep(3)
             ser.write(b'3')
             time.sleep(3)
@@ -78,10 +79,7 @@ def Dispensador(value):
                 ard=ser.readline()
                 print(ard)
                 if(str(ard).startswith("b'OK")):
-                    break 
-            break
-    with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+                    break   
     Dispensado = True
 
             
@@ -91,7 +89,6 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
     Dispensado = False
     with open('data.json') as json_file:
         data = json.load(json_file)
-    
     root=tkinter.Tk()
     root.title("Dispensar")
 
@@ -155,11 +152,13 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
     frame.grid(row=7,column=1)
 
     def DispensarNFC():
+        ser.write(b'E')
+        time.sleep(5)
         pload = []
         Value = data[seguridadVar]["uid"]
         if(Nfc.reconocer(Value,ser)):
             for i in pastillasVar:
-                pload.append([pill[0],data["pastillas"][pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
+                pload.append([i[0],data["pastillas"][i[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
             Dispensador(json.dumps(pload))
             root.destroy()
@@ -175,6 +174,8 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
 
 
     def DispensarFacial():
+        ser.write(b'E')
+        time.sleep(5)
         pload = []
         fileName = data[seguridadVar]["nombre"]+".xml" #Comunicación desde APP a Python
         time.sleep(1) 
@@ -189,7 +190,7 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
 
         if(verificado == True):
             for i in pastillasVar:
-                pload.append([pill[0],data["pastillas"][pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
+                pload.append([i[0],data["pastillas"][i[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
             Dispensador(json.dumps(pload))
             root.destroy()
@@ -206,11 +207,13 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
                     break 
 
     def DispensarPin():
+        ser.write(b'E')
+        time.sleep(5)
         global error
         pload = []
         if(data[seguridadVar]["pinData"] == PINentry1.get()):
             for i in pastillasVar:
-                pload.append([pill[0],data["pastillas"][pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
+                pload.append([i[0],data["pastillas"][i[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
             print(pload)
             Dispensador(json.dumps(pload))
             root.destroy()
@@ -235,9 +238,11 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
                 ErrorText.grid(row=11,column=0,columnspan=4)
 
     def DispensarNoSeguridad():
+        ser.write(b'E')
+        time.sleep(5)
         pload = []
         for i in pastillasVar:
-            pload.append([pill[0],data["pastillas"][pill[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
+            pload.append([i[0],data["pastillas"][i[0]]["contenedor"],i[1],repetirVar,dosisId,contactosList])
         print("Enviar: " + str(pload))
         Dispensador(json.dumps(pload))
         root.destroy()

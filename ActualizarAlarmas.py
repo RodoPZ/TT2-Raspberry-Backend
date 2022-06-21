@@ -4,6 +4,8 @@ import json
 import time
 import Caducidad
 import requests
+import serial
+ser = serial.Serial('/dev/ttyACM0',9600, timeout = 1)
 def setAlarm(Dosis):
     numstring = ""
     alarm_days = []  
@@ -47,9 +49,17 @@ def setAlarm(Dosis):
         current_day = now.weekday()
         
         print(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
-        print()
+        print(alarm_days,alarm_hour,alarm_min)
         if current_day in alarm_days:
+            print("es el día")
             if alarm_hour == current_hour:
+                print("es la hora")
                 if alarm_min == current_min:
+                        print("yadebería de salir esa madre")
+                        time.sleep(2)
+                        ser.write(b'4')
+                        time.sleep(2)
+                        ser.write(str(numstring).encode())
+                        time.sleep(2)
                         Dispensar(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
                         time.sleep(30)
