@@ -16,6 +16,3 @@ def PocasPastillas(compartimento):
     button1=tkinter.Button(root2, text="ok", bg='#f85f6a',fg="white" ,font=("Asap",20),command=root2.destroy)
     button1.grid(row=2,column=0,columnspan=4)
     root2.mainloop()
-
-if __name__ == "__main__":
-    Seguridad(2)

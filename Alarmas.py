@@ -5,10 +5,8 @@ import time
 import json
 import ActualizarAlarmas
 import requests
-
+data = { "caducado": ""}
 def withInternet():
-    with open('data.json') as json_file:
-        data = json.load(json_file)
     cred = credentials.Certificate("tt2-database-31516e0b99db.json") #descargar de https://console.cloud.google.com/iam-admin/serviceaccounts/details/101070432244239069365/keys?project=tt2-database
     #initialize_app(cred, {'storageBucket': 'tt2-database.appspot.com'})
     db = firestore.client()
@@ -103,13 +101,12 @@ def withInternet():
             ActualizarAlarmas.setAlarm(Dosis)
 
 
-url = "https://firebase.google.com/?hl=es"
+url = "https://firebase.google.com"
 timeout = 10
 try:
 	request = requests.get(url, timeout=timeout)
 	withInternet()
 except (requests.ConnectionError, requests.Timeout) as exception:
-    print("No hay internet")
-    # withNoInternet()
+    print(exception)
 
 

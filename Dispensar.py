@@ -68,7 +68,6 @@ def Dispensador(value):
         db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).update({"horario" : ""})
     db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").document(value[0][4]).set({"historial" : {str(datetime.today())[:10]:str(datetime.today())[10:16]}},merge=True)
     for i in value:
-        #print(data["pastillas"][i[0]]["cantidad"],data["pocaspastillas"])
         if data["pastillas"][i[0]]["cantidad"]<6:
             time.sleep(3)
             ser.write(b'3')
