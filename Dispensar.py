@@ -55,7 +55,7 @@ def Dispensador(value):
     ser.write(b'1')
     time.sleep(2)
     ser.write(b'K')
-    time.sleep(3)
+    time.sleep(4)
     ser.write(value[0][5].encode())  
     time.sleep(3)
     while True:
@@ -222,9 +222,9 @@ def Dispensar(dosisVar,pastillasVar,horaVar,repetirVar,dosisId,seguridadVar,cont
             if error == 3: 
                 error = 0 
                 ser.write(b'2')
-                time.sleep(1)
+                time.sleep(3)
                 ser.write(b'6')
-                time.sleep(1)    
+                time.sleep(4)    
                 ser.write(str(contactosList).encode())
                 while True:
                     ard=ser.readline()

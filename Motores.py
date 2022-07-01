@@ -8,11 +8,11 @@ def dispensar(cantidad,compartimento, ser):
 	       
 	
 def mover(compartimento,ser):
-	sleep(3)
+	sleep(4)
 	ser.flushInput()
 	ser.write(b'2')
-	sleep(3)
+	sleep(4)
 	ser.write(b'9')
-	sleep(3)
+	sleep(4)
 	ser.write(str(compartimento).encode())
 
