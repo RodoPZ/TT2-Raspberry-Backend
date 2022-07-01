@@ -5,7 +5,7 @@ import time
 import json
 import ActualizarAlarmas
 import requests
-
+data = {}
 def withInternet():
     cred = credentials.Certificate("tt2-database-31516e0b99db.json") #descargar de https://console.cloud.google.com/iam-admin/serviceaccounts/details/101070432244239069365/keys?project=tt2-database
     #initialize_app(cred, {'storageBucket': 'tt2-database.appspot.com'})
@@ -16,15 +16,22 @@ def withInternet():
     Dosis = []
     pastillaList = {}
     contactosList = {}
-    data = { "caducado": ""}
+    
+    
     while(True):
+        with open('data.json') as json_file:
+            tempdata = json.load(json_file)
+        data.update({"caducado" : tempdata["caducado"]})  
         time.sleep(2)
         dosisdata = []
         collection = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Dosis").get()
         pastilladata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Pastillas").get()
         contactosdata = db.collection("Users").document("2aZ3V4Ik89e9rDSzo4N9").collection("Contactos").get()
 
-        if(pastilladata != PastillaIds and str(pastilladata)!="[]"):
+        if(pastilladata != PastillaIds and str(pastilladata)=="[]"):
+            PastillaIds = pastilladata
+            data.update({"pastillas" : ""})  
+        elif(pastilladata != PastillaIds and str(pastilladata)!="[]"):
             PastillaIds = pastilladata
             for pastilla in pastilladata:
                 pastillaid = pastilla.id
@@ -33,7 +40,10 @@ def withInternet():
             data.update({"pastillas" : pastillaList})  
         time.sleep(2)
 
-        if(contactosdata != ContactosIds and str(contactosdata)!="[]"):
+        if(contactosdata != ContactosIds and str(contactosdata)=="[]"):
+            ContactosIds = contactosdata
+            data.update({"contactos" : ""}) 
+        elif(contactosdata != ContactosIds and str(contactosdata)!="[]"):
             ContactosIds = contactosdata
             for contacto in contactosdata:
                 contactoid = contacto.id
@@ -42,7 +52,16 @@ def withInternet():
             data.update({"contactos" : contactosList})  
         time.sleep(2)
 
-        if(collection != DosisIds and str(collection)!="[]"):
+        print(collection != DosisIds)
+        print(str(collection))
+        if(collection != DosisIds and str(collection)=="[]"):
+            Dosis = []
+            print("entró")
+            DosisIds = collection
+            data.update({"dosis" : ""})
+            with open('data.json', 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        elif(collection != DosisIds and str(collection)!="[]"):
             DosisIds = collection
             for doc in collection:
                 docId = doc.id

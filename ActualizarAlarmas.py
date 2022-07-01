@@ -11,19 +11,19 @@ def setAlarm(Dosis):
     alarm_days = []  
     with open('data.json') as json_file:
         data = json.load(json_file)
-
-    for pastillas in data["pastillas"]:
-        date_time_obj = datetime.datetime.strptime(str(data["pastillas"][pastillas]["caducidad"]), '%d/%m/%Y')
-        diference= date_time_obj.date()-datetime.datetime.now().date()
-        if(diference.days<10 and data["caducado"] != str(datetime.datetime.now().date()) ):
-            Caducidad.Seguridad(data["pastillas"][pastillas]["nombre"],diference.days,data["pastillas"][pastillas]["caducidad"])
-            data.update({"caducado" : str(datetime.datetime.now().date())})
-            for contacto in data["contactos"]:
-                numstring += " " + str(data["contactos"][contacto]["numero"])
-            r = requests.post('http://localhost:8080/EnviarMensajes', data=json.dumps(numstring))
-            numstring = ""
-            with open('data.json', 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+    if("pastillas" in data):
+        for pastillas in data["pastillas"]:
+            date_time_obj = datetime.datetime.strptime(str(data["pastillas"][pastillas]["caducidad"]), '%d/%m/%Y')
+            diference= date_time_obj.date()-datetime.datetime.now().date()
+            if(diference.days<10 and data["caducado"] != str(datetime.datetime.now().date()) ):
+                Caducidad.Seguridad(data["pastillas"][pastillas]["nombre"],diference.days,data["pastillas"][pastillas]["caducidad"])
+                data.update({"caducado" : str(datetime.datetime.now().date())})
+                for contacto in data["contactos"]:
+                    numstring += " " + str(data["contactos"][contacto]["numero"])
+                r = requests.post('http://localhost:8080/EnviarMensajes', data=json.dumps(numstring))
+                numstring = ""
+                with open('data.json', 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
             
             
     for alarm in Dosis:
@@ -63,3 +63,4 @@ def setAlarm(Dosis):
                         time.sleep(2)
                         Dispensar(name,pills,f"{alarm_hour}:{alarm_min}",alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
                         time.sleep(30)
+
