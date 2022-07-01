@@ -5,7 +5,7 @@ import time
 import json
 import ActualizarAlarmas
 import requests
-data = { "caducado": ""}
+
 def withInternet():
     cred = credentials.Certificate("tt2-database-31516e0b99db.json") #descargar de https://console.cloud.google.com/iam-admin/serviceaccounts/details/101070432244239069365/keys?project=tt2-database
     #initialize_app(cred, {'storageBucket': 'tt2-database.appspot.com'})
@@ -16,6 +16,7 @@ def withInternet():
     Dosis = []
     pastillaList = {}
     contactosList = {}
+    data = { "caducado": ""}
     while(True):
         time.sleep(2)
         dosisdata = []

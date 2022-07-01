@@ -33,8 +33,8 @@ def setAlarm(Dosis):
             alarm_days.append(day)
         alarm_hour = alarm[1]
         alarm_min = alarm[2]
-        name = alarm[3]
-        alarm_repetir = alarm[4]['nombre']
+        name = alarm[4]['nombre']
+        alarm_repetir = alarm[3]
         dosis_Seguridad = alarm[4]['seguridad']
         dosis_contactos = []
         if(len(alarm[4]['alarmas'])>=3):
@@ -55,7 +55,7 @@ def setAlarm(Dosis):
             if alarm_hour == current_hour:
                 print("es la hora")
                 if alarm_min == current_min:
-                        print("yadebería de salir esa madre")
+                        print("Mostrando Mensaje")
                         time.sleep(2)
                         ser.write(b'4')
                         time.sleep(2)
