@@ -1,4 +1,3 @@
-import re
 from bottle import route, run, response, get, post, request, HTTPResponse
 from cv2 import merge
 from firebase_admin import initialize_app, storage
@@ -83,6 +82,7 @@ def OpenDispensar():
     numstring = value[6]
     result = DispensarDosis.Dispensar(name,pills,hourmin,alarm_repetir,dosis_Id,dosis_Seguridad,numstring)
     return HTTPResponse(str(result))
+
     
 @post('/EnviarMensajes')
 def EnviarMensajes():
